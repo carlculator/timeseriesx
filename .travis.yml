@@ -21,6 +21,7 @@ deploy:
   user: carl_culator
   password:
     secure: Yysk6FLr+Mn2W1LdvCoyZaFshPARvaESonoiSHLxFK0d4tkkEiAwDsM/UXzn4dLJyJscYwYVXcFklJM3dVBZo1+EcWQQpj3QIEopaX09YHpgj6wymEodlqELWGdIu7mm2HTaYRhdqM6sqsrvgK4Zr2NEDAoIj0XqXNLkMQrKz2Y0QByRISDsHIuQbcUt80u37ezRI1/sk4/xaMlyH+HHlxzvyebXb6h9EsGPM85g8qhT9vw1JCzjxBOv6Wb5s72elxMRfFw1R0AQX+JdKE7Hy20ick6vWPVSOd5h1ql2wWx9nIpoA9jLR5be78lX5+WgtMewtE14Lo9W/MWj5jTCOItLh5u0asL8EPn/BfE7VX7jiKUrTdKD0sF/drIPINGXGirUnheamfvverqY0jtZoDl16OdoerbkFCKsYJcTVZpS3lDJLSgl2dUCxb4y+veenjSVgs4lKBCxuNuOlnrPkbHrVCa8BKR8wj4RE7g1jLRTs9qRmPjVauQhXk6wqKPzVsvN2MCiOkkDV1+x1uXmNCNGHohB8CSQ7CNevRDIpy58ec7p2tKK0BeEM7ixjnkVTrjAUvd/CNbczQAOsfHz2pqpvjGWU2XRc5H2tw9CXOEf2NKo25XW0MJQmVQPMyZFwFK0KOaTaPzRArvbZSpfnVZXDiRv4hG2V+ZcEq89FOc=
-  tags: true
-  repo: carlculator/timeseriesx
-  python: 3.9
+  on:
+    tags: true
+    repo: carlculator/timeseriesx
+    python: 3.9
