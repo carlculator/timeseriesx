@@ -29,12 +29,12 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :param str/datetime.datetime/pandas.Timestamp end: the end timestamp of the
             series (included)
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported
         :param str/pint.Unit unit: the unit of the series's values, many string
             representations of common units are supported, such as `m`, `s`, `kg`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone, (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
@@ -47,7 +47,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     def create_constant_timeseries(start, end, value, freq, unit=None,
                                    time_zone='infer'):
         """
-        create a `TimestampSeries`-object from `start` to `end``with constant value
+        create a `TimestampSeries`-object from `start` to `end` with constant value
 
         :param str/datetime.datetime/pandas.Timestamp start: the start timestamp of the
             series (included)
@@ -55,16 +55,16 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             series (included)
         :param int/float value: the constant value for each element
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported
         :param str/pint.Unit unit: the unit of the series's values, many string
             representations of common units are supported, such as `m`, `s`, `kg`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone, (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
-        :rtype:TimestampSeries
+        :rtype: TimestampSeries
         """
         index = pd.date_range(start, end, freq=freq)
         series = pd.Series([value] * len(index), index=index)
@@ -76,22 +76,22 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
                           time_zone='infer'):
         """
         create a `TimestampSeries`-object from a list of timestamps and values matched
-            by their index
+        by their index
 
         :param list timestamps: the timestamps of the series
         :param list values: the values of the series
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
             timestamps
         :param str/pint.Unit unit: the unit of the series's values, many string
             representations of common units are supported, such as `m`, `s`, `kg`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone, (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
-        :rtype:TimestampSeries
+        :rtype: TimestampSeries
         """
         if not len(timestamps) == len(values):
             raise ValueError('lengths of timestamps and values do not not match')
@@ -106,17 +106,17 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
         :param list tuples: list of tuples holding timestamp and value
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
             timestamps
         :param str/pint.Unit unit: the unit of the series's values, many string
             representations of common units are supported, such as `m`, `s`, `kg`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone, (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
-        :rtype:TimestampSeries
+        :rtype: TimestampSeries
         """
         dictionary = {k: v for k, v in tuples}
         return TimestampSeries.create_from_dict(dictionary, freq=freq, unit=unit,
@@ -130,17 +130,17 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
         :param list tuples: list of tuples holding timestamp and value
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
             timestamps
         :param str/pint.Unit unit: the unit of the series's values, many string
             representations of common units are supported, such as `m`, `s`, `kg`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone, (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
-        :rtype:TimestampSeries
+        :rtype: TimestampSeries
         """
         series = pd.Series(dictionary)
         return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
@@ -153,17 +153,17 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
         :param pandas.Series: a pandas series-object with `DatetimeIndex`
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
             timestamps
         :param str/pint.Unit unit: the unit of the series's values, many string
             representations of common units are supported, such as `m`, `s`, `kg`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone, (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
-        :rtype:TimestampSeries
+        :rtype: TimestampSeries
         """
         return cls(series, freq=freq, unit=unit, time_zone=time_zone)
 
@@ -173,13 +173,13 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         """
         :param series: a pandas series-object with `DatetimeIndex`
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
-            the frequency of the timestamp series or None, `pandas offset aliases<https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            the frequency of the timestamp series or None, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
             timestamps
         :param str/pint.Unit unit: the unit of the series's values or None, many string
             representations of common units are supported, such as `'m'`, `'s'`, `'kg'`
             and many more
-        :param str/tzinfo time_zone: the name of the time zone or None (see `IANA<https://www.iana.org/time-zones>`_)
+        :param str/tzinfo time_zone: the name of the time zone or None (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         """

@@ -29,6 +29,7 @@ class BaseTimeSeries(metaclass=ABCMeta):
     def map(self, func):
         """
         apply a custom function to each value of the series
+
         :param function func: a function mapping a scalar to another scalar
         :return: self
         :rtype: BaseTimeSeries
@@ -39,6 +40,7 @@ class BaseTimeSeries(metaclass=ABCMeta):
     def aggregate(self, func):
         """
         aggregate all values of the series with a custom aggregation function
+
         :param function func: a function mapping a numeric list/array/vector to a scalar
         :return: the aggregated value
         :rtype: numpy.float/numpy.int
