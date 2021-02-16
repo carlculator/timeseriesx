@@ -15,7 +15,7 @@ setup_requirements = ['pytest-runner', ]
 test_requirements = ['pytest>=3', ]
 
 requirements = [
-    'pandas>=0.25, <=1.1.5',
+    'pandas>=0.25',
     'pint-pandas>=0.1',
     'pytz>=2020.5',
     'python-dateutil>=2.8.1',
@@ -24,14 +24,13 @@ requirements = [
 setup(
     author="Alexander Schulz",
     author_email='info@alexander-schulz.eu',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
