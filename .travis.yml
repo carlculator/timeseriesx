@@ -6,7 +6,6 @@ python:
 - 3.9
 - 3.8
 - 3.7
-- 3.6
 install: pip install -U tox-travis coverage
 before_script:  # code coverage tool
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
