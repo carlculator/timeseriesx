@@ -1,0 +1,28 @@
+language: python
+env:
+  global:
+    - CC_TEST_REPORTER_ID=f0f58a84abac073113c3a0d8f9d1315fa83ed580a3d5f95fe9fdfeecaff3302d
+python:
+- 3.9
+- 3.8
+- 3.7
+- 3.6
+install: pip install -U tox-travis coverage
+before_script:  # code coverage tool
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script: tox
+after_script:
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.9" ]]; then ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT; fi
+  - coverage erase
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: carl_culator
+  password:
+    secure: Tl7IiTKUntDcaSmdAXwicisqytQ8oWkkQ+d6eSEoBs6zBam/uMiVikuKcntZU8B0zbJiJoFVnLQStfYVZJRjHvq9afkUnqh1FxVUINBlh+vZOPpGhpk3aQ8J4QY/1m2uUAQdp8RzB+6KoJs2nRAVkRDaZA7okabBy/qITT18R9w/9lTpiMCvw680HVxaqFG/Q/mEiLa1IXDe7CbFlAAlGzN3SXnni9C6T5zypriBmR74bnEjzjCykRMpUR9vqmfTArI4+HxElDzW3Yuny+OnO6tES9VImhTE7MXtEEfEsRk15gHJBfdgz9Cw5x7uzjGU8RfPUAWTF37KR6f14CEHdG+LjisDj1/G1voi4d7+ORdupqjMo3uCOtijCmMTXgTvbaqHi0jTWpYP+SjMnh0IZUnsV9qy2VyrpmHKT0WZXrstKYyHExT2YqDzD25a7sJLtSPMHM6nP07ykR+i3r+KoBuvfe88cSMJ7jMRPIhQCATBrJF1tp3hwxnANIU4TgK7pEWtGo9aXDq7IlUQmFuZfHwNb6ABindFyTSmodmSwrMJDTo9vG9s4AWxCDe2AufzuN3DEgV+SFqaDCkb4Fon9W02kKgeQx6SVwPzL6RsQcM6vp4fSUk7VlxFcq7nDQ/o2POBJwYWKCEoY7Acb+BiLNaMbPkM10z1ybhWICKrSHM=
+  on:
+    tags: true
+    repo: carlculator/timeseriesx
+    python: 3.9
