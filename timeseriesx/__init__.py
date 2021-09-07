@@ -2,7 +2,7 @@
 
 __author__ = """Alexander Schulz"""
 __email__ = 'info@alexander-schulz.eu'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 import pint
 import pint_pandas
