@@ -42,25 +42,6 @@ def tz_equal(tz1, tz2, trange=None):
     )
 
 
-def tzname_is_valid(tz, exception=False):
-    """
-    validate if a string represents a time zone
-
-    :param str tz: the name of the timezone to be validated
-    :param exception exception: if True, raise a ValueError when validation fails
-    :return: True, if timezone is valid, else False
-    :rtype: bool
-    """
-    if not isinstance(tz, str):
-        raise ValueError(f'{tz} is not a valid time zone name')
-    if not str.lower(tz) in map(str.lower, pytz.all_timezones):
-        if exception:
-            raise ValueError("invalid time zone")
-        else:
-            return False
-    return True
-
-
 def coerce_time_zone(tz):
     """
     returns the convenient representation of a time zone as a pytz-based `tzinfo`-object
@@ -72,12 +53,9 @@ def coerce_time_zone(tz):
     if tz is None:
         return tz
     if isinstance(tz, str):
-        tzname_is_valid(tz, exception=True)
-        return pd.Timestamp.now(tz=tz).tz
+        return pytz.timezone(tz)
     elif isinstance(tz, tzinfo):
-        tz_name = tz.tzname(pd.Timestamp.now())
-        tzname_is_valid(tz_name, exception=True)
-        return pd.Timestamp.now(tz=tz).tz_convert(tz_name).tz  # coerce pytz
+        return tz
     else:
         raise ValueError(f'{tz} is not a valid timezone')
 

@@ -6,7 +6,9 @@ import pandas as pd
 import pytest
 import pytz
 import dateutil
+from dateutil.tz import tzutc
 from pint_pandas import PintArray
+from pytz import UnknownTimeZoneError
 
 from timeseriesx import (
     TimestampSeries,
@@ -244,14 +246,14 @@ def test_create_timestamp_series_inferred_time_zone_none():
     assert ts._series.index.tzinfo is None
 
 
-def test_create_timestamp_series_inferred_time_zone_invalid():
+def test_create_timestamp_series_inferred_time_zone_valid():
     timestamps = [
         pd.Timestamp('2020-01-01T00:00:00+01:00'),
         pd.Timestamp('2020-01-03T00:00:00+01:00'),
     ]
     values = [0., 1.]
-    with pytest.raises(ValueError):
-        TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.time_zone == pytz.FixedOffset(60)
 
 
 def test_create_timestamp_series_inferred_time_zone_inconsistent():
@@ -343,8 +345,8 @@ def test_create_timestamp_series_mismatching_freq():
 
 
 def test_create_timestamp_series_invalid_time_zone():
-    illegal_tz = pytz.FixedOffset(60)
-    with pytest.raises(ValueError):
+    illegal_tz = 'Europe/Nantes'
+    with pytest.raises(UnknownTimeZoneError):
         TimestampSeries(series=pd.Series([0., 1., 2.], index=[
             pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
             pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
@@ -411,7 +413,7 @@ def test_create_timestamp_series_valid_timezone_obj_pytz():
 def test_create_timestamp_series_valid_timezone_obj_dateutil():
     ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([])),
                          time_zone=dateutil.tz.tzutc())
-    assert ts.time_zone == pytz.UTC
+    assert isinstance(ts.time_zone, tzutc)
 
 
 def test_timestamp_series_add_timestamp_series_different_freq(default_timestamp_series):
