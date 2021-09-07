@@ -314,13 +314,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     def __eq__(self, other):
         if not isinstance(other, TimestampSeries):
             return False
-        return (
-            self.tz_equal(other.time_zone) and
-            self.freq == other.freq and
-            self.unit == other.unit and
-            self.timestamps == other.timestamps and
-            self.values == other.values
-        )
+        return self.timestamps == other.timestamps \
+               and self.values == other.values
 
     def __setitem__(self, key, value):
         raise NotImplementedError()
@@ -341,8 +336,6 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         tmp_series = copy.deepcopy(self)
         if self.freq != other.freq:
             raise ValueError("The time series have different frequencies")
-        if not self.tz_equal(other.time_zone):
-            raise ValueError("The time series have different time zones")
         if not self.unit == other.unit:
             raise ValueError("The time series have different units")
         if not self._series.index.equals(other._series.index):

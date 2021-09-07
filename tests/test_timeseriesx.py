@@ -434,8 +434,10 @@ def test_timestamp_series_add_timestamp_series_different_tz(default_timestamp_se
                   ),
         time_zone='UTC', unit='m', freq='D'
     )
-    with pytest.raises(ValueError):
-        default_timestamp_series + add_ts
+    result = default_timestamp_series + add_ts
+    assert default_timestamp_series._series.index.union(
+        add_ts._series.index).tolist() == result.timestamps
+    assert result.values == [0., 0., 1., 1., 2., 2.]
 
 
 def test_timestamp_series_add_timestamp_series_different_unit(default_timestamp_series):

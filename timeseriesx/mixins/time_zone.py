@@ -3,7 +3,6 @@ import warnings
 from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.time_zone import (
     coerce_time_zone,
-    tz_equal,
     infer_tz_from_series,
 )
 
@@ -38,16 +37,6 @@ class TimeZoneMixin(BaseMixin):
             self._series.index = self._series.index.tz_convert('UTC').tz_convert(tz)
         self._time_zone = tz
         return self
-
-    def tz_equal(self, other_tz):
-        """
-        compare the series' time zone with another timezone
-
-        :param str/datetime.tzinfo other_tz:
-        :return: True, if time zones are equal
-        :rtype: bool
-        """
-        return tz_equal(self._time_zone, other_tz)
 
     def _validate_time_zone(self):
         inferred_tz = infer_tz_from_series(self._series)
