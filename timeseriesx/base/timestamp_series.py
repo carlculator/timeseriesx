@@ -129,7 +129,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         create a `TimestampSeries`-object from a dict timestamps as keys and values as
         values
 
-        :param list tuples: list of tuples holding timestamp and value
+        :param dict dictionary: dict with timestamps as keys and timeseries-values as
+            dict-values
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
             the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
