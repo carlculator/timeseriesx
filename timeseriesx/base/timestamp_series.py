@@ -346,7 +346,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             return self._basic_calc_time_series(operation, other, **kwargs)
         elif isinstance(other, pd.Series):
             return self._basic_calc_pd_series(operation, other, **kwargs)
-        elif isinstance(other, (collections.Sequence, np.ndarray, PintArray)):
+        elif isinstance(other, (collections.abc.Sequence, np.ndarray, PintArray)):
             return self._basic_calc_collection(operation, other)
         else:
             return self._basic_calc_scalar(operation, other)
