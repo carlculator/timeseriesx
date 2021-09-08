@@ -37,16 +37,6 @@ class UnitMixin(BaseMixin):
         else:
             return tmp_series[tmp_series.notnull()]
 
-    def is_unit_compatible(self, other_unit):
-        """
-        check if a unit is compatible (convertable) with the series' unit
-
-        :param pint.Unit other_unit: the other unit for comparison
-        :return: True, if units are compatible
-        :rtype: bool
-        """
-        return ureg.is_compatible_with(self._unit, other_unit)
-
     def convert_unit(self, unit):
         """
         convert the unit of the series

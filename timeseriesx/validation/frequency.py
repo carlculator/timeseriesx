@@ -37,24 +37,3 @@ def coerce_freq(freq):
             return pd.tseries.frequencies.to_offset(freq)
         except ValueError:
             raise ValueError('invalid frequency')
-
-
-def freq_is_valid(freq, exception=True):
-    """
-    validate a frequency object or string, valid frequencies can be represented
-    by a pandas.DateOffset
-
-    :param str/datetime.timedelta/pandas.Timedelta/pandas.DateOffset freq:
-        the frequency string or object to be validated
-    :param exception exception: if True, raise a ValueError when validation fails
-    :return: True, if frequency is valid, else False
-    :rtype: bool
-    """
-    try:
-        coerce_freq(freq)
-    except ValueError as e:
-        if exception:
-            raise e
-        else:
-            return False
-    return True

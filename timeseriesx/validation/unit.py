@@ -17,22 +17,3 @@ def coerce_unit(unit):
         return unit
     else:
         return ValueError(f'{unit} is no valid unit')
-
-
-def unit_is_valid(unit, exception=True):
-    """
-    validate a unit object or a unit string
-
-    :param str/pint.Unit unit: the
-    :param exception: if True, raise an execption when validation fails
-    :return: True, if the validation passes
-    :rtype: bool
-    """
-    try:
-        coerce_unit(unit)
-    except ValueError as e:
-        if exception:
-            raise e
-        else:
-            return False
-    return True
