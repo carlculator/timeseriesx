@@ -74,7 +74,7 @@ class UnitMixin(BaseMixin):
                 except ValueError:
                     raise ValueError()
                 else:
-                    warnings.warn('passed unit and unit of series do not ')
+                    warnings.warn('passed unit and unit of series do not conform')
         else:
             self.convert_unit(self._unit)
 
