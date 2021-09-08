@@ -5,7 +5,8 @@ import warnings
 
 import numpy as np
 import pandas as pd
-from pint_pandas import PintArray
+from pint import Quantity
+from pint_pandas import PintArray, PintType
 
 from timeseriesx.validation.timestamp_index import (
     index_is_datetime,
@@ -302,11 +303,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     def __repr__(self):
         return "{klass}(series=Series(PintArray({values}, dtype={unit}), " \
-               "index=DatetimeIndex({index}, tz={tz}, freq={freq})), " \
+               "index={index}), " \
                "freq={freq}, unit={unit}, time_zone={tz})".format(
             klass=self.__class__.__name__,
             values=self.values,
-            index=repr(self._series.index.values),
+            index=repr(self._series.index),
             tz=f"'{self.time_zone}'" if self.time_zone else None,
             freq=f"'{self.freq.freqstr}'" if self.freq else None,
             unit=f"'{self.unit or ''}'")
@@ -353,15 +354,19 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not self._series.index.equals(other.index):
             warnings.warn("timestamps do not match, values are auto-filled")
         tmp_series._series = getattr(tmp_series._series, operation)(other, **kwargs)
+        if isinstance(tmp_series._series.dtype, PintType):
+            tmp_series._unit = tmp_series._series.dtype.units
         return tmp_series
 
     def _basic_calc_collection(self, operation, other):
         tmp_series = copy.deepcopy(self)
         if len(other) != len(self):
             raise ValueError("sequence has different length")
-        if not all(map(lambda x: isinstance(x, numbers.Number), other)):
+        if not all(map(lambda x: isinstance(x, (numbers.Number, Quantity)), other)):
             raise ValueError("sequence contains non-numeric values")
         tmp_series._series = getattr(tmp_series._series, operation)(other)
+        if isinstance(tmp_series._series.dtype, PintType):
+            tmp_series._unit = tmp_series._series.dtype.units
         return tmp_series
 
     def _basic_calc_scalar(self, operation, other):
