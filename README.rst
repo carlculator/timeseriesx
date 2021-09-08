@@ -16,7 +16,7 @@ TimeSeriesX
 .. image:: https://pyup.io/repos/github/carlculator/timeseriesx/shield.svg
      :target: https://pyup.io/repos/github/carlculator/timeseriesx/
      :alt: Updates
-
+r
 .. image:: https://api.codeclimate.com/v1/badges/8777e8089ca4fe83e8ab/test_coverage
    :target: https://codeclimate.com/github/carlculator/timeseriesx/test_coverage
    :alt: Test Coverage
