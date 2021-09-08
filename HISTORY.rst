@@ -2,6 +2,15 @@
 History
 =======
 
+0.1.3 (2021-09-08)
+------------------
+
+* remove manual timezone checks because it is handled by pandas
+* fix skipped tests
+* fix repr() method of TimestampSeries
+* fix basic calculation with units involved
+
+
 0.1.2 (2021-09-07)
 ------------------
 

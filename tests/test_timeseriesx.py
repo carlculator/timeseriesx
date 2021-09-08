@@ -1,11 +1,11 @@
 import datetime as dt
 from collections import OrderedDict
 
+import dateutil
 import numpy as np
 import pandas as pd
 import pytest
 import pytz
-import dateutil
 from dateutil.tz import tzutc
 from pint_pandas import PintArray
 from pytz import UnknownTimeZoneError
@@ -168,30 +168,27 @@ def test_timestamp_series_as_dict_empty(empty_timestamp_series):
     assert empty_timestamp_series.as_dict() == {}
 
 
-@pytest.mark.skip('revise assertion')
 def test_timestamp_series_as_pd_series_default(default_timestamp_series):
-    assert pd.testing.assert_series_equal(
+    pd.testing.assert_series_equal(
         default_timestamp_series.as_pd_series(),
-        pd.Series([0, 1, 2],
+        pd.Series([0., 1., 2.],
                   index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
                   ),
     )
 
 
-@pytest.mark.skip('revise assertion')
 def test_timestamp_series_as_pd_series_empty(empty_timestamp_series):
-    assert pd.testing.assert_series_equal(
+    pd.testing.assert_series_equal(
         empty_timestamp_series.as_pd_series(),
         pd.Series([], index=pd.DatetimeIndex([])),
     )
 
 
-@pytest.mark.skip('revise assertion')
 def test_timestamp_series_repr_default(default_timestamp_series):
     from pandas import Series, DatetimeIndex
     from numpy import array
     ts = eval(repr(default_timestamp_series))
-    assert pd.testing.assert_series_equal(ts._series, default_timestamp_series._series)
+    pd.testing.assert_series_equal(ts._series, default_timestamp_series._series)
 
 
 def test_timestamp_series_repr_empty(empty_timestamp_series):
@@ -468,7 +465,6 @@ def test_timestamp_series_add_timestamp_series_different_index(default_timestamp
     )
 
 
-@pytest.mark.skip('check why series is considered as tuple')
 def test_timestamp_series_add_pandas_series():
     ts = TimestampSeries(
         pd.Series(np.arange(3),
@@ -478,14 +474,14 @@ def test_timestamp_series_add_pandas_series():
     )
     pd_series = pd.Series(np.arange(3),
                           index=pd.date_range('2020-01-02',
-                                              freq='D', periods=3, tz='CET')),
+                                              freq='D', periods=3, tz='UTC'))
     result_ts = ts + pd_series
     assert result_ts.first == (
-        pd.Timestamp('2020-01-01').tz_localize('CET'), 0.
+        pd.Timestamp('2020-01-01').tz_localize('UTC'), 0.
     )
     assert result_ts.values == [0., 1., 3., 2.]
     assert result_ts.last == (
-        pd.Timestamp('2020-01-04').tz_localize('CET'), 2.
+        pd.Timestamp('2020-01-04').tz_localize('UTC'), 2.
     )
 
 
@@ -509,6 +505,18 @@ def test_timestamp_series_add_list_ok():
     )
     result_ts = ts + [0., 1., 2.]
     assert result_ts.values == [0., 2., 4.]
+
+
+def test_timestamp_series_add_pint_array(default_timestamp_series):
+    result_ts = default_timestamp_series + PintArray([0., 100., 200.], dtype='cm')
+    assert result_ts.values == [0., 2., 4.]
+    assert result_ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_multiply_pint_array(default_timestamp_series):
+    result_ts = default_timestamp_series * PintArray([1., 1., 1.], dtype='m')
+    assert result_ts.values == [0., 1., 2.]
+    assert result_ts.unit == ureg.Unit('m^2')
 
 
 def test_timestamp_series_add_scalar():
