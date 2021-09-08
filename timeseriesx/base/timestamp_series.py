@@ -327,7 +327,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             return self._basic_calc_time_series(operation, other, **kwargs)
         elif isinstance(other, pd.Series):
             return self._basic_calc_pd_series(operation, other, **kwargs)
-        elif isinstance(other, (collections.Sequence, np.ndarray)):
+        elif isinstance(other, (collections.Sequence, np.ndarray, PintArray)):
             return self._basic_calc_collection(operation, other)
         else:
             return self._basic_calc_scalar(operation, other)
@@ -348,8 +348,6 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         tmp_series = copy.deepcopy(self)
         if not isinstance(other.index, pd.DatetimeIndex):
             raise ValueError("The series has no proper DatetimeIndex")
-        if not self.tz_equal(other.index.tz):
-            raise ValueError("The series have different time zones")
         if not all(map(lambda x: isinstance(x, numbers.Number), other)):
             raise ValueError("sequence contains non-numeric values")
         if not self._series.index.equals(other.index):
