@@ -2,6 +2,12 @@ import pandas as pd
 
 
 def index_is_datetime(series, exception=True):
+    """
+    :param class:`pandas.Series` series:
+    :param bool exception:
+    :return:
+    :rtype: bool
+    """
     if not isinstance(series.index, pd.DatetimeIndex):
         if exception:
             raise ValueError('series index is no proper DatetimeIndex')
