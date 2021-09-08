@@ -30,8 +30,12 @@ class UnitMixin(BaseMixin):
         else:
             return self._series.pint.magnitude
 
-    def as_pd_series(self):
-        return self._get_magnitude_series()
+    def as_pd_series(self, include_nan=True):
+        tmp_series = self._get_magnitude_series()
+        if include_nan:
+            return tmp_series
+        else:
+            return tmp_series[tmp_series.notnull()]
 
     def is_unit_compatible(self, other_unit):
         """

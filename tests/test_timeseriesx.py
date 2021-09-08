@@ -184,6 +184,36 @@ def test_timestamp_series_as_pd_series_empty(empty_timestamp_series):
     )
 
 
+def test_timestamp_series_as_pd_series_include_nan():
+    ts = TimestampSeries(
+        pd.Series(PintArray([0., np.nan, 2.], dtype=ureg.parse_units('m')),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
+                  ),
+        time_zone='CET', unit='m', freq='D'
+    )
+    pd.testing.assert_series_equal(
+        ts.as_pd_series(include_nan=True),
+        pd.Series([0., np.nan, 2.],
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
+                  ),
+    )
+
+
+def test_timestamp_series_as_pd_series_exclude_nan():
+    ts = TimestampSeries(
+        pd.Series(PintArray([0., np.nan, 2.], dtype=ureg.parse_units('m')),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
+                  ),
+        time_zone='CET', unit='m', freq='D'
+    )
+    pd.testing.assert_series_equal(
+        ts.as_pd_series(include_nan=False),
+        pd.Series([0., 2.],
+                  index=pd.to_datetime(['2020-01-01', '2020-01-03']).tz_localize('CET')
+                  ),
+    )
+
+
 def test_timestamp_series_repr_default(default_timestamp_series):
     from pandas import Series, DatetimeIndex
     from numpy import array
