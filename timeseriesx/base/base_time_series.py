@@ -27,7 +27,7 @@ class BaseTimeSeries(metaclass=ABCMeta):
 
     # ---------------------------- functionality ----------------------------- #
 
-    def map(self, func):
+    def map(self, func, **kwargs):
         """
         apply a custom function to each value of the series
 

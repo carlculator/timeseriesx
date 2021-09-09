@@ -234,6 +234,42 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     # ---------------------------- functionality ----------------------------- #
 
+    def map(self, func, dimensionless=True):
+        """
+        apply a custom function to each value of the series
+
+        :param function func: a function mapping a scalar to another scalar
+        :param bool dimensionless: if set to True, the mapping function takes
+            an argument of type Number (no unit, dimensionless). The resulting
+            timestamp series will keep the original unit. If set to False,
+            the mapping function takes an argument of type pint.Quantity.
+            The resulting timestamp series will have the unit of the mapped
+            values. Mapping values of one series to different units results in
+            an error. Mapping with dimensionless=False will result in a loop
+            and therefore perform slower.
+        :return: the series with mapped values
+        :rtype: TimestampSeries
+        """
+        if self.empty:
+            return self
+
+        if isinstance(self._series.dtype, PintType):
+            if dimensionless:
+                mapped_values = self._get_magnitude_series().apply(func).values
+                self._series = pd.Series(PintArray(mapped_values, dtype=self.unit),
+                                         index=self._series.index)
+            else:
+                mapped_values = list(map(func, self._series.values))
+                mapped_unit = mapped_values[0].u
+                if any(map(lambda x: x.u != mapped_unit, mapped_values)):
+                    raise ValueError("the mapped values do not have the same unit")
+                magnitudes = [v.magnitude for v in mapped_values]
+                self._series = pd.Series(PintArray(magnitudes, dtype=mapped_unit),
+                                         index=self._series.index)
+        else:
+            self._series = self._series.apply(func)
+        return self
+
     def round(self, decimals):
         """
         round the values of the series

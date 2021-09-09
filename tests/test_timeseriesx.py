@@ -251,6 +251,23 @@ def test_timestamp_series_str_empty(empty_timestamp_series):
     assert "Time zone: " in str(empty_timestamp_series)
 
 
+def test_map_dimensionless(default_timestamp_series):
+    mapped_ts = default_timestamp_series.map(
+        lambda x: max(x, 1.)
+    )
+    assert mapped_ts.values == [1., 1., 2.]
+    assert mapped_ts._series.dtype.units == ureg.Unit('m')
+
+
+def test_map_with_dimension(default_timestamp_series):
+    mapped_ts = default_timestamp_series.map(
+        lambda x: max(x, 1. * ureg.Unit('m')),
+        dimensionless=False,
+    )
+    assert mapped_ts.values == [1., 1., 2.]
+    assert mapped_ts._series.dtype.units == ureg.Unit('m')
+
+
 def test_round_no_unit():
     timestamps = [
         pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
