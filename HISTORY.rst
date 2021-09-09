@@ -2,6 +2,14 @@
 History
 =======
 
+0.1.4 (2021-09-09)
+------------------
+
+* improved test coverage
+* improve TimeSeries equality check
+* support NaN-removal in as_pd_series-method
+
+
 0.1.3 (2021-09-08)
 ------------------
 
