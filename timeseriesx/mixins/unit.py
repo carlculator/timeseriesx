@@ -30,18 +30,12 @@ class UnitMixin(BaseMixin):
         else:
             return self._series.pint.magnitude
 
-    def as_pd_series(self):
-        return self._get_magnitude_series()
-
-    def is_unit_compatible(self, other_unit):
-        """
-        check if a unit is compatible (convertable) with the series' unit
-
-        :param pint.Unit other_unit: the other unit for comparison
-        :return: True, if units are compatible
-        :rtype: bool
-        """
-        return ureg.is_compatible_with(self._unit, other_unit)
+    def as_pd_series(self, include_nan=True):
+        tmp_series = self._get_magnitude_series()
+        if include_nan:
+            return tmp_series
+        else:
+            return tmp_series[tmp_series.notnull()]
 
     def convert_unit(self, unit):
         """
@@ -80,7 +74,7 @@ class UnitMixin(BaseMixin):
                 except ValueError:
                     raise ValueError()
                 else:
-                    warnings.warn('passed unit and unit of series do not ')
+                    warnings.warn('passed unit and unit of series do not conform')
         else:
             self.convert_unit(self._unit)
 

@@ -2,6 +2,7 @@ import copy
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
+import pandas as pd
 
 
 class BaseTimeSeries(metaclass=ABCMeta):
@@ -72,8 +73,11 @@ class BaseTimeSeries(metaclass=ABCMeta):
     def as_dict(self, ordered=False):
         raise NotImplementedError()
 
-    def as_pd_series(self):
-        return self._series
+    def as_pd_series(self, include_nan=True):
+        if include_nan:
+            return self._series
+        else:
+            return self._series[self._series.notnull()]
 
     # ---------------------------- magic methods ----------------------------- #
 

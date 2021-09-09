@@ -129,7 +129,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         create a `TimestampSeries`-object from a dict timestamps as keys and values as
         values
 
-        :param list tuples: list of tuples holding timestamp and value
+        :param dict dictionary: dict with timestamps as keys and timeseries-values as
+            dict-values
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
             the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
             supported, pass `'infer'` if you want the frequency to be derived by the
@@ -315,8 +316,25 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     def __eq__(self, other):
         if not isinstance(other, TimestampSeries):
             return False
-        return self.timestamps == other.timestamps \
-               and self.values == other.values
+        self_values = self.values
+        other_values = other.values
+        self_timestamps = self.timestamps
+        other_timestamps = other.timestamps
+        if self.unit:
+            self_values = self._series.pint.to_base_units().values.data
+        if other.unit:
+            other_values = other._series.pint.to_base_units().values.data
+        if self.time_zone:
+            tmp_self = copy.deepcopy(self)
+            tmp_self.convert_time_zone('UTC')
+            self_timestamps = tmp_self.timestamps
+        if other.time_zone:
+            tmp_other = copy.deepcopy(other)
+            tmp_other.convert_time_zone('UTC')
+            other_timestamps = tmp_other.timestamps
+
+        return self_timestamps == other_timestamps \
+               and self_values == other_values
 
     def __setitem__(self, key, value):
         raise NotImplementedError()
@@ -328,7 +346,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             return self._basic_calc_time_series(operation, other, **kwargs)
         elif isinstance(other, pd.Series):
             return self._basic_calc_pd_series(operation, other, **kwargs)
-        elif isinstance(other, (collections.Sequence, np.ndarray, PintArray)):
+        elif isinstance(other, (collections.abc.Sequence, np.ndarray, PintArray)):
             return self._basic_calc_collection(operation, other)
         else:
             return self._basic_calc_scalar(operation, other)
@@ -355,7 +373,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             warnings.warn("timestamps do not match, values are auto-filled")
         tmp_series._series = getattr(tmp_series._series, operation)(other, **kwargs)
         if isinstance(tmp_series._series.dtype, PintType):
-            tmp_series._unit = tmp_series._series.dtype.units
+            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     def _basic_calc_collection(self, operation, other):
@@ -366,12 +384,12 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             raise ValueError("sequence contains non-numeric values")
         tmp_series._series = getattr(tmp_series._series, operation)(other)
         if isinstance(tmp_series._series.dtype, PintType):
-            tmp_series._unit = tmp_series._series.dtype.units
+            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     def _basic_calc_scalar(self, operation, other):
         tmp_series = copy.deepcopy(self)
-        if not isinstance(other, numbers.Number):
+        if not isinstance(other, (numbers.Number, Quantity)):
             raise ValueError('value is not numeric')
         tmp_series._series = getattr(tmp_series._series, operation)(other)
         return tmp_series

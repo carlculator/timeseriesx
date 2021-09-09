@@ -1,2 +1,9 @@
 [run]
 source = timeseriesx/*
+
+[report]
+exclude_lines =
+    raise NotImplementedError
+    return NotImplemented
+    @abstractmethod
+    @abc.abstractmethod

@@ -7,6 +7,7 @@ import pandas as pd
 import pytest
 import pytz
 from dateutil.tz import tzutc
+from pint import DimensionalityError
 from pint_pandas import PintArray
 from pytz import UnknownTimeZoneError
 
@@ -52,6 +53,16 @@ def test_timestamp_series_create_from_lists():
     assert ts.freq == pd.offsets.Hour()
     assert ts.time_zone is None
     assert ts.unit is None
+
+
+def test_timestamp_series_create_from_lists_mismatching_length():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+    ]
+    values = [-1,]
+    with pytest.raises(ValueError):
+        TimestampSeries.create_from_lists(timestamps, values)
 
 
 def test_timestamp_series_properties_time_range_default(default_timestamp_series):
@@ -184,6 +195,36 @@ def test_timestamp_series_as_pd_series_empty(empty_timestamp_series):
     )
 
 
+def test_timestamp_series_as_pd_series_include_nan():
+    ts = TimestampSeries(
+        pd.Series(PintArray([0., np.nan, 2.], dtype=ureg.parse_units('m')),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
+                  ),
+        time_zone='CET', unit='m', freq='D'
+    )
+    pd.testing.assert_series_equal(
+        ts.as_pd_series(include_nan=True),
+        pd.Series([0., np.nan, 2.],
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
+                  ),
+    )
+
+
+def test_timestamp_series_as_pd_series_exclude_nan():
+    ts = TimestampSeries(
+        pd.Series(PintArray([0., np.nan, 2.], dtype=ureg.parse_units('m')),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='CET')
+                  ),
+        time_zone='CET', unit='m', freq='D'
+    )
+    pd.testing.assert_series_equal(
+        ts.as_pd_series(include_nan=False),
+        pd.Series([0., 2.],
+                  index=pd.to_datetime(['2020-01-01', '2020-01-03']).tz_localize('CET')
+                  ),
+    )
+
+
 def test_timestamp_series_repr_default(default_timestamp_series):
     from pandas import Series, DatetimeIndex
     from numpy import array
@@ -216,9 +257,16 @@ def test_timestamp_series_append_default(default_timestamp_series):
     )
 
 
-def test_timestamp_series_append_empty(empty_timestamp_series):
+def test_timestamp_series_append_empty():
+    ts = TimestampSeries(pd.Series([], dtype=float, index=pd.DatetimeIndex([])), freq='10s')
     with pytest.raises(ValueError):
-        empty_timestamp_series.append(1.)
+        ts.append(1.)
+
+
+def test_timestamp_series_append_no_freq():
+    ts = TimestampSeries(pd.Series([1.], dtype=float, index=pd.DatetimeIndex(['2020-01-01'])))
+    with pytest.raises(ValueError):
+        ts.append(1.)
 
 
 def test_timestamp_series_prepend_default(default_timestamp_series):
@@ -341,6 +389,27 @@ def test_create_timestamp_series_mismatching_freq():
         TimestampSeries.create_from_lists(timestamps, values, freq='10Min')
 
 
+def test_create_timestamp_series_mismatching_compatible_unit():
+    ts = (
+        TimestampSeries(series=pd.Series(PintArray([0., 1., 2.], dtype='km'), index=[
+            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
+            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
+            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
+        ]), unit='m')
+    )
+    assert ts.unit == ureg.Unit('m')
+    assert ts.values == [0., 1000., 2000.]
+
+
+def test_create_timestamp_series_mismatching_incompatible_unit():
+    with pytest.raises(DimensionalityError):
+        TimestampSeries(series=pd.Series(PintArray([0., 1., 2.], dtype='m'), index=[
+            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
+            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
+            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
+        ]), unit='km/h')
+
+
 def test_create_timestamp_series_invalid_time_zone():
     illegal_tz = 'Europe/Nantes'
     with pytest.raises(UnknownTimeZoneError):
@@ -363,6 +432,15 @@ def test_create_timestamp_series_invalid_unit():
     with pytest.raises(ValueError):
         TimestampSeries(series=pd.Series([], dtype=float, index=pd.DatetimeIndex([])),
                         unit=illegal_unit)
+
+
+def test_create_timestamp_series_invalid_index():
+    with pytest.raises(ValueError):
+        TimestampSeries(series=pd.Series([0., 1., 2.], index=[
+            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
+            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
+            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
+        ]))
 
 
 def test_create_timestamp_series_valid_unit_str():
@@ -530,15 +608,87 @@ def test_timestamp_series_add_scalar():
     assert result_ts.values == [1., 2., 3.]
 
 
-def test_timestamp_series_multiply_scalar():
+def test_timestamp_series_multiply_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series * 2
+    assert result_ts.values == [0., 2., 4.]
+
+
+@pytest.mark.skip('unit should be qm') # Todo: to be reported @pint_pandas
+def test_timestamp_series_multiply_pint_scalar(default_timestamp_series):
     ts = TimestampSeries(
         pd.Series(np.arange(3),
-                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='UTC')
+                  index=pd.date_range('2020-01-01', freq='D', periods=3)
                   ),
-        time_zone='UTC', freq='D'
+        unit='m'
     )
-    result_ts = ts * 2
+    result_ts = ts * (2 * ureg.Unit('m'))
     assert result_ts.values == [0., 2., 4.]
+    assert result_ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_div_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series / 2
+    assert result_ts.values == [0., .5, 1.]
+
+
+@pytest.mark.skip('should work')  # Todo: to be reported @pint_pandas
+def test_timestamp_series_floordiv_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series // 2
+    assert result_ts.values == [0., 0., 1.]
+
+
+@pytest.mark.skip('unit should be m')  # Todo: to be reported @pint_pandas
+def test_timestamp_series_floordiv_pint_scalar():
+    ts = TimestampSeries(
+        pd.Series(np.arange(3),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3)
+                  ),
+        unit='m^2'
+    )
+    result_ts = ts // (2 * ureg.Unit('m'))
+    assert result_ts.values == [0., 0., 1.]
+    assert result_ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_subtract_list():
+    ts = TimestampSeries(
+        pd.Series(np.arange(3),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3)
+                  ))
+    result_ts = ts - [0., 1., 2.]
+    assert result_ts.values == [0., 0., 0.]
+
+
+def test_timestamp_series_subtract_pd_series_mismatch():
+    ts = TimestampSeries(
+        pd.Series(np.arange(3),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3)),
+    )
+    result_ts = ts - pd.Series(np.arange(2),
+                               index=pd.date_range('2020-01-01', freq='D', periods=2))
+    assert result_ts.timestamps == ts.timestamps
+    assert result_ts.values == [0., 0., 2.]
+
+
+def test_get_item(default_timestamp_series):
+    assert default_timestamp_series[0] == 0 * ureg.Unit('m')
+
+
+def test_loop(default_timestamp_series):
+    for idx, item in enumerate(default_timestamp_series):
+        assert item == idx * ureg.Unit('m')
+
+
+def test_eq(default_timestamp_series):
+    ts1 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('EST'), 1.)],
+        unit='km', freq=None,
+    )
+    ts2 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('GMT'), 1000.)],
+        unit='m', freq=None,
+    )
+    assert ts1 == ts2
 
 
 def test_timestamp_series_convert_unit_from_none():
