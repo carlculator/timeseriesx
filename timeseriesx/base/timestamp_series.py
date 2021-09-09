@@ -234,6 +234,23 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     # ---------------------------- functionality ----------------------------- #
 
+    def round(self, decimals):
+        """
+        round the values of the series
+
+        :param decimals: no of decimal places to round to
+        :return: the series with rounded values
+        :rtype: TimestampSeries
+        """
+        # ToDo: feature request at pint-pandas
+        if isinstance(self._series.dtype, PintType):
+            rounded_values = self._get_magnitude_series().values.round(decimals)
+            self._series = pd.Series(PintArray(rounded_values, dtype=self.unit),
+                                     index=self._series.index)
+        else:
+            self._series = self._series.round(decimals)
+        return self
+
     def append(self, value):
         """
         append a new value to a series with frequency
