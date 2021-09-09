@@ -563,6 +563,33 @@ def test_timestamp_series_add_pandas_series():
     )
 
 
+def test_timestamp_series_add_pandas_series_different_time_zones():
+    ts = TimestampSeries(
+        pd.Series(np.arange(3.),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='UTC')
+                  ),
+        time_zone='Europe/Stockholm', freq='D'
+    )
+    pd_series = pd.Series(np.arange(3.),
+                          index=pd.date_range('2020-01-01',
+                                              freq='D', periods=3, tz='UTC'))
+    result_ts = ts + pd_series
+    assert result_ts.first == (
+        pd.Timestamp('2020-01-01').tz_localize('UTC').tz_convert('Europe/Stockholm'), 0.
+    )
+    assert result_ts.values == [0., 2., 4.]
+    assert result_ts.last == (
+        pd.Timestamp('2020-01-03').tz_localize('UTC').tz_convert('Europe/Stockholm'), 4.
+    )
+    pd.testing.assert_series_equal(
+        result_ts._series,
+        pd.Series([0., 2., 4.],
+                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='UTC')
+                        .tz_convert('Europe/Stockholm'))
+    )
+    assert result_ts.time_zone == pytz.timezone('Europe/Stockholm')
+
+
 def test_timestamp_series_add_list_error():
     ts = TimestampSeries(
         pd.Series(np.arange(3),

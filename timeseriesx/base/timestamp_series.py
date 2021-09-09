@@ -372,6 +372,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not self._series.index.equals(other.index):
             warnings.warn("timestamps do not match, values are auto-filled")
         tmp_series._series = getattr(tmp_series._series, operation)(other, **kwargs)
+        # enforce resulting TimestampSeries' time zone to be equal to initial
+        # TimestampSeries (self)
+        tmp_series.convert_time_zone(self.time_zone)
         if isinstance(tmp_series._series.dtype, PintType):
             tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
