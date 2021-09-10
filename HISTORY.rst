@@ -2,10 +2,19 @@
 History
 =======
 
+0.1.5 (2021-09-10)
+------------------
+
+* fix time zone issue with UTC in basic calculations
+* add round-method for TimestampSeries
+* fix map-function for series with unit
+* add more tests
+
+
 0.1.4 (2021-09-09)
 ------------------
 
-* improved test coverage
+* improve test coverage
 * improve TimeSeries equality check
 * support NaN-removal in as_pd_series-method
 

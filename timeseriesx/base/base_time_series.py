@@ -27,7 +27,7 @@ class BaseTimeSeries(metaclass=ABCMeta):
 
     # ---------------------------- functionality ----------------------------- #
 
-    def map(self, func):
+    def map(self, func, **kwargs):
         """
         apply a custom function to each value of the series
 
@@ -53,6 +53,9 @@ class BaseTimeSeries(metaclass=ABCMeta):
 
     def mean(self):
         return self.aggregate(np.mean)
+
+    def round(self, decimals):
+        raise NotImplementedError()
 
     def append(self, value):
         raise NotImplementedError()

@@ -90,7 +90,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -115,7 +115,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -140,7 +140,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -148,8 +148,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
                                                      time_zone=time_zone)
 
-    @classmethod
-    def create_from_pd_series(cls, series, freq='infer', unit=None, time_zone='infer'):
+    @staticmethod
+    def create_from_pd_series(series, freq='infer', unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from a pandas `Series` with `DatetimeIndex`
 
@@ -167,7 +167,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        return cls(series, freq=freq, unit=unit, time_zone=time_zone)
+        return TimestampSeries(series, freq=freq, unit=unit, time_zone=time_zone)
 
     # ------------------------------ constructor ----------------------------- #
 
@@ -233,6 +233,59 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         return self.start, self.end
 
     # ---------------------------- functionality ----------------------------- #
+
+    def map(self, func, dimensionless=True):
+        """
+        apply a custom function to each value of the series
+
+        :param function func: a function mapping a scalar to another scalar
+        :param bool dimensionless: if set to True, the mapping function takes
+            an argument of type Number (no unit, dimensionless). The resulting
+            timestamp series will keep the original unit. If set to False,
+            the mapping function takes an argument of type pint.Quantity.
+            The resulting timestamp series will have the unit of the mapped
+            values. Mapping values of one series to different units results in
+            an error. Mapping with dimensionless=False will result in a loop
+            and therefore perform slower.
+        :return: the series with mapped values
+        :rtype: TimestampSeries
+        """
+        if self.empty:
+            return self
+
+        if isinstance(self._series.dtype, PintType):
+            if dimensionless:
+                mapped_values = self._get_magnitude_series().apply(func).values
+                self._series = pd.Series(PintArray(mapped_values, dtype=self.unit),
+                                         index=self._series.index)
+            else:
+                mapped_values = list(map(func, self._series.values))
+                mapped_unit = mapped_values[0].u
+                if any(map(lambda x: x.u != mapped_unit, mapped_values)):
+                    raise ValueError("the mapped values do not have the same unit")
+                magnitudes = [v.magnitude for v in mapped_values]
+                self._series = pd.Series(PintArray(magnitudes, dtype=mapped_unit),
+                                         index=self._series.index)
+        else:
+            self._series = self._series.apply(func)
+        return self
+
+    def round(self, decimals):
+        """
+        round the values of the series
+
+        :param decimals: no of decimal places to round to
+        :return: the series with rounded values
+        :rtype: TimestampSeries
+        """
+        # ToDo: feature request at pint-pandas
+        if isinstance(self._series.dtype, PintType):
+            rounded_values = self._get_magnitude_series().values.round(decimals)
+            self._series = pd.Series(PintArray(rounded_values, dtype=self.unit),
+                                     index=self._series.index)
+        else:
+            self._series = self._series.round(decimals)
+        return self
 
     def append(self, value):
         """
@@ -372,6 +425,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not self._series.index.equals(other.index):
             warnings.warn("timestamps do not match, values are auto-filled")
         tmp_series._series = getattr(tmp_series._series, operation)(other, **kwargs)
+        # enforce resulting TimestampSeries' time zone to be equal to initial
+        # TimestampSeries (self)
+        tmp_series.convert_time_zone(self.time_zone)
         if isinstance(tmp_series._series.dtype, PintType):
             tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
