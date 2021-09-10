@@ -39,7 +39,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
         :return: a new TimestampSeries-object
-        :rtype:TimestampSeries
+        :rtype: TimestampSeries
         """
         return TimestampSeries.create_constant_timeseries(
             start, end, np.NaN, freq, unit, time_zone=time_zone)
