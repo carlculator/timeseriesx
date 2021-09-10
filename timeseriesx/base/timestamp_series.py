@@ -90,7 +90,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -115,7 +115,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -140,7 +140,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -148,8 +148,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
                                                      time_zone=time_zone)
 
-    @classmethod
-    def create_from_pd_series(cls, series, freq='infer', unit=None, time_zone='infer'):
+    @staticmethod
+    def create_from_pd_series(series, freq='infer', unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from a pandas `Series` with `DatetimeIndex`
 
@@ -167,7 +167,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        return cls(series, freq=freq, unit=unit, time_zone=time_zone)
+        return TimestampSeries(series, freq=freq, unit=unit, time_zone=time_zone)
 
     # ------------------------------ constructor ----------------------------- #
 
