@@ -90,7 +90,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -115,7 +115,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
@@ -140,7 +140,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             and many more
         :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
-            from `start` and `end`
+            by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
