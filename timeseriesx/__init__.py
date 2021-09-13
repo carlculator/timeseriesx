@@ -2,12 +2,10 @@
 
 __author__ = """Alexander Schulz"""
 __email__ = 'info@alexander-schulz.eu'
-__version__ = '0.1.5'
+__version__ = '0.1.6'
 
 import pint
-import pint_pandas
 
-ureg = pint.UnitRegistry()
-pint_pandas.PintType.ureg = ureg
+ureg = pint.get_application_registry()
 
 from timeseriesx.base.timestamp_series import TimestampSeries

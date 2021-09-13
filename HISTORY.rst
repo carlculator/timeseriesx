@@ -2,6 +2,17 @@
 History
 =======
 
+
+0.1.6 (2021-09-13)
+------------------
+
+* fix time zone issue with UTC in basic calculations for TimestampSeries as 2nd operand
+* update pint-pandas version dependency
+* use pint's default unit registry
+* add support of callables as arguments for frequency resampling
+* add more tests
+
+
 0.1.5 (2021-09-10)
 ------------------
 

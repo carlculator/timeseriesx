@@ -42,7 +42,8 @@ class UnitMixin(BaseMixin):
         convert the unit of the series
 
         :param str/pint.Unit unit:
-        :return:
+        :return: the time series with converted units
+        :rtype: BaseTimeSeries
         """
         if unit is None:
             if isinstance(self._series.dtype, PintType):

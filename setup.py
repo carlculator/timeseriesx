@@ -16,7 +16,7 @@ test_requirements = ['pytest>=3', ]
 
 requirements = [
     'pandas>=0.25',
-    'pint-pandas>=0.1',
+    'pint-pandas>=0.2',
     'pytz>=2020.5',
     'python-dateutil>=2.8.1',
 ]
@@ -47,6 +47,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/carlculator/timeseriesx',
-    version='0.1.5',
+    version='0.1.6',
     zip_safe=False,
 )
