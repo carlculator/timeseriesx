@@ -84,7 +84,7 @@ class FrequencyMixin(BaseMixin):
                 'can only resample to smaller frequencies (larger offsets)'
             )
         freq = coerce_freq(freq)
-        self._series = getattr(self._series.resample(freq), method)()
+        self._series = getattr(self._series.resample(freq), 'aggregate')(method)
         self._freq = freq
         return self
 

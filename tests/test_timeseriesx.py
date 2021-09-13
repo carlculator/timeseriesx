@@ -835,13 +835,27 @@ def test_timestamp_series_get_gaps():
     ]
 
 
-def test_timestamp_series_resample():
+def test_timestamp_series_resample_str_method():
     ts = TimestampSeries(
         pd.Series(np.ones(48),
                   index=pd.date_range('2020-01-01', freq='H', periods=48, tz='CET')
                   ),
-        time_zone='CET', freq='H'
+        time_zone='CET', freq='H', unit='m',
     )
     ts = ts.resample('D', 'sum')
     assert ts.freq == pd.offsets.Day()
     assert ts.values == [24, 24]
+    assert ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_resample_with_function_and_nan():
+    ts = TimestampSeries(
+        pd.Series(np.repeat(np.nan, 48),
+                  index=pd.date_range('2020-01-01', freq='H', periods=48, tz='CET')
+                  ),
+        time_zone='CET', freq='H', unit='m',
+    )
+    ts = ts.resample('D', np.mean)
+    assert ts.freq == pd.offsets.Day()
+    assert np.all(np.isnan(ts.values))
+    assert ts.unit == ureg.Unit('m')
