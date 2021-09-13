@@ -566,8 +566,8 @@ def test_timestamp_series_add_timestamp_series_different_tz(default_timestamp_se
     assert default_timestamp_series._series.index.union(
         add_ts._series.index).tolist() == result.timestamps
     assert result.values == [0., 0., 1., 1., 2., 2.]
-    assert add_ts.time_zone == pytz.timezone('UTC')
-    assert add_ts._series.index.tzinfo == add_ts.time_zone
+    assert result.time_zone == pytz.timezone('CET')
+    assert result._series.index.tzinfo == result.time_zone
 
 
 def test_timestamp_series_add_timestamp_series_different_unit(default_timestamp_series):

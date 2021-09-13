@@ -414,6 +414,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             warnings.warn("timestamps do not match, values are auto-filled")
         tmp_series._series = getattr(tmp_series._series, operation)(
             other._series, **kwargs)
+        tmp_series.convert_time_zone(self.time_zone)
         return tmp_series
 
     def _basic_calc_pd_series(self, operation, other, **kwargs):
