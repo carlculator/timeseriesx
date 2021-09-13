@@ -23,7 +23,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     @staticmethod
     def create_null_timeseries(start, end, freq, unit=None, time_zone='infer'):
         """
-        create a `TimestampSeries`-object from `start` to `end``with NaN-values
+        create a `TimestampSeries`-object from `start` to `end` with NaN-values
 
         :param str/datetime.datetime/pandas.Timestamp start: the start timestamp of the
             series (included)

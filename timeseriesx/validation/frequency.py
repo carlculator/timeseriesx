@@ -25,6 +25,7 @@ def infer_freq(series):
 def coerce_freq(freq):
     """
     return a convenient representation of a frequency as a pandas.DateOffset object
+
     :param str/datetime.timedelta/pandas.Timedelta/pandas.DateOffset freq:
         a frequency string or frequency object to coerce
     :return: coerced frequency object

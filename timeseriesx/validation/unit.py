@@ -9,7 +9,7 @@ def coerce_unit(unit):
 
     :param str/pint.Unit unit: the unit string to parse or a Unit object
     :return: the coerced unit
-    :rtype pint.Unit
+    :rtype: pint.Unit
     """
     if isinstance(unit, str):
         unit = ureg.parse_units(unit)

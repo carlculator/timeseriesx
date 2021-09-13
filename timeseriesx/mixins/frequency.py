@@ -72,7 +72,7 @@ class FrequencyMixin(BaseMixin):
             frequency (greater offset)
         :param str/Callable method: aggregation method, e.g. 'mean', 'sum', 'min', 'max'
             or function that a collection (e.g. pandas.Series or list) of numeric values as its
-                argument and returns a scalar
+            argument and returns a scalar
         :return: the resamples time series
         :rtype: BaseTimeSeries
         """
