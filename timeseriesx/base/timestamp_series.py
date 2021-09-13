@@ -449,6 +449,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not isinstance(other, (numbers.Number, Quantity)):
             raise ValueError('value is not numeric')
         tmp_series._series = getattr(tmp_series._series, operation)(other)
+        if isinstance(other, Quantity):
+            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     # ---------------------------- validation ------------------------------- #

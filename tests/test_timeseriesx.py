@@ -695,7 +695,6 @@ def test_timestamp_series_multiply_scalar(default_timestamp_series):
     assert result_ts.values == [0., 2., 4.]
 
 
-@pytest.mark.skip('unit should be qm') # Todo: to be reported @pint_pandas
 def test_timestamp_series_multiply_pint_scalar(default_timestamp_series):
     ts = TimestampSeries(
         pd.Series(np.arange(3),
@@ -705,7 +704,7 @@ def test_timestamp_series_multiply_pint_scalar(default_timestamp_series):
     )
     result_ts = ts * (2 * ureg.Unit('m'))
     assert result_ts.values == [0., 2., 4.]
-    assert result_ts.unit == ureg.Unit('m')
+    assert result_ts.unit == ureg.Unit('m^2')
 
 
 def test_timestamp_series_div_scalar(default_timestamp_series):
@@ -719,16 +718,15 @@ def test_timestamp_series_floordiv_scalar(default_timestamp_series):
     assert result_ts.values == [0., 0., 1.]
 
 
-@pytest.mark.skip('unit should be m')  # Todo: to be reported @pint_pandas
-def test_timestamp_series_floordiv_pint_scalar():
+def test_timestamp_series_div_pint_scalar():
     ts = TimestampSeries(
         pd.Series(np.arange(3),
                   index=pd.date_range('2020-01-01', freq='D', periods=3)
                   ),
         unit='m^2'
     )
-    result_ts = ts // (2 * ureg.Unit('m'))
-    assert result_ts.values == [0., 0., 1.]
+    result_ts = ts / (2 * ureg.Unit('m'))
+    assert result_ts.values == [0., .5, 1.]
     assert result_ts.unit == ureg.Unit('m')
 
 
