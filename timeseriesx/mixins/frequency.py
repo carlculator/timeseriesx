@@ -34,7 +34,7 @@ class FrequencyMixin(BaseMixin):
             investigated (included)
         :param float/int/np.float value: the constant fill value
         :return: return the series with filled gaps
-        :rtype BaseTimeSeries
+        :rtype: BaseTimeSeries
         """
         if not self._freq:
             raise ValueError('cannot determine gaps when freq is not set')
@@ -55,7 +55,7 @@ class FrequencyMixin(BaseMixin):
         :param datetime.datetime end: the end timestamps of the period that will be
             investigated (included)
         :return: list of timestamps
-        :rtype list of datetime.datetime
+        :rtype: list of datetime.datetime
         """
         if not self._freq:
             raise ValueError('cannot determine gaps when freq is not set')
@@ -70,9 +70,11 @@ class FrequencyMixin(BaseMixin):
 
         :param freq: the new frequency, has to be smaller than the current
             frequency (greater offset)
-        :param str method: aggregation method, e.g. 'mean', 'sum', 'min', 'max'
+        :param str/Callable method: aggregation method, e.g. 'mean', 'sum', 'min', 'max'
+            or function that a collection (e.g. pandas.Series or list) of numeric values as its
+                argument and returns a scalar
         :return: the resamples time series
-        :rtype BaseTimeSeries
+        :rtype: BaseTimeSeries
         """
         if not self._freq:
             raise ValueError('cannot resample when freq is not set')
