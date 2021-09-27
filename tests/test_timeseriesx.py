@@ -817,6 +817,32 @@ def test_timestamp_series_fill_gaps():
     assert ts[timestamps[-1] + dt.timedelta(hours=1)] == 2
 
 
+def test_timestamp_series_fill_gaps_no_start_and_end():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, np.nan]
+    ts = TimestampSeries.create_from_lists(timestamps, values, freq=pd.offsets.Hour())
+    ts = ts.fill_gaps(value=2)
+    assert len(ts) == 3
+    assert ts.values == [1, 1, 2]
+
+
+def test_timestamp_series_fill_gaps_with_unit(default_timestamp_series):
+    default_timestamp_series.fill_gaps(
+        end=default_timestamp_series.timestamps[-1] + default_timestamp_series.freq,
+        value=0.0
+    )
+    assert default_timestamp_series.values == [0.0, 1.0, 2.0, 0.0]
+
+
+def test_timestamp_series_fill_gaps_empty_series(empty_timestamp_series):
+    with pytest.raises(ValueError):
+        empty_timestamp_series.fill_gaps()
+
+
 def test_timestamp_series_get_gaps():
     timestamps = [
         dt.datetime(2020, 3, 1, 15, 0, 0),
@@ -831,6 +857,33 @@ def test_timestamp_series_get_gaps():
         timestamps[0] - dt.timedelta(hours=1),
         timestamps[-1] + dt.timedelta(hours=1)
     ]
+
+
+def test_timestamp_series_get_gaps_no_start_and_end():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [np.nan, 1, 1]
+    ts = TimestampSeries.create_from_lists(timestamps, values, freq=pd.offsets.Hour())
+    gaps = ts.get_gaps()
+    assert gaps == [
+        timestamps[0]
+    ]
+
+
+def test_timestamp_series_get_gaps_empty_series(empty_timestamp_series):
+    with pytest.raises(ValueError):
+        empty_timestamp_series.get_gaps()
+
+
+def test_timestamp_series_get_gaps_with_unit(default_timestamp_series):
+    end = default_timestamp_series.timestamps[-1] + default_timestamp_series.freq
+    gaps = default_timestamp_series.get_gaps(
+        end=end,
+    )
+    assert gaps == [end]
 
 
 def test_timestamp_series_resample_str_method():
