@@ -3,6 +3,15 @@ History
 =======
 
 
+0.1.7 (2021-09-28)
+------------------
+
+* improve gap handling
+* update dependencies
+* improve documentation
+* fix calculations with quantity scalar
+
+
 0.1.6 (2021-09-13)
 ------------------
 

@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* saelsa_
+
+.. _saelsa: https://github.com/saelsa
