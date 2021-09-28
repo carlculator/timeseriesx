@@ -3,6 +3,14 @@ History
 =======
 
 
+0.1.8 (2021-09-28)
+------------------
+
+* fix time zone bug in gap handling
+* update dependencies
+* add more tests
+
+
 0.1.7 (2021-09-28)
 ------------------
 
