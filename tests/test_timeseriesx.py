@@ -817,6 +817,50 @@ def test_timestamp_series_fill_gaps():
     assert ts[timestamps[-1] + dt.timedelta(hours=1)] == 2
 
 
+def test_timestamp_series_fill_gaps_start_and_end_different_timezone():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, 1]
+    ts = TimestampSeries.create_from_lists(
+        timestamps,
+        values,
+        freq=pd.offsets.Hour(),
+        time_zone="UTC"
+    )
+    with pytest.raises(ValueError):
+        ts.fill_gaps(
+            pytz.timezone('Europe/Berlin').localize(timestamps[0]) - dt.timedelta(hours=1),
+            pytz.timezone('Europe/Berlin').localize(timestamps[-1]) + dt.timedelta(hours=1),
+            value=2
+        )
+
+
+def test_timestamp_series_fill_gaps_start_and_end_no_timezone():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, 1]
+    ts = TimestampSeries.create_from_lists(
+        timestamps,
+        values,
+        freq=pd.offsets.Hour(),
+        time_zone="Europe/Berlin"
+    )
+    ts.fill_gaps(
+        timestamps[0] - dt.timedelta(hours=1),
+        timestamps[-1] + dt.timedelta(hours=1),
+        value=2
+    )
+    assert len(ts) == 5
+    assert ts[timestamps[0] - dt.timedelta(hours=1)] == 2
+    assert ts[timestamps[-1] + dt.timedelta(hours=1)] == 2
+
+
 def test_timestamp_series_fill_gaps_no_start_and_end():
     timestamps = [
         dt.datetime(2020, 3, 1, 15, 0, 0),
@@ -827,6 +871,7 @@ def test_timestamp_series_fill_gaps_no_start_and_end():
     ts = TimestampSeries.create_from_lists(timestamps, values, freq=pd.offsets.Hour())
     ts = ts.fill_gaps(value=2)
     assert len(ts) == 3
+    assert ts.timestamps == timestamps
     assert ts.values == [1, 1, 2]
 
 
@@ -836,6 +881,7 @@ def test_timestamp_series_fill_gaps_with_unit(default_timestamp_series):
         value=0.0
     )
     assert default_timestamp_series.values == [0.0, 1.0, 2.0, 0.0]
+    assert default_timestamp_series._series.dtype == default_timestamp_series.unit
 
 
 def test_timestamp_series_fill_gaps_empty_series(empty_timestamp_series):
@@ -856,6 +902,51 @@ def test_timestamp_series_get_gaps():
     assert gaps == [
         timestamps[0] - dt.timedelta(hours=1),
         timestamps[-1] + dt.timedelta(hours=1)
+    ]
+
+
+def test_timestamp_series_get_gaps_start_and_end_different_timezone():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, 1]
+    ts = TimestampSeries.create_from_lists(
+        timestamps,
+        values,
+        freq=pd.offsets.Hour(),
+        time_zone="UTC"
+    )
+    with pytest.raises(ValueError):
+        ts.get_gaps(
+            pytz.timezone('Europe/Berlin').localize(timestamps[0]) - dt.timedelta(hours=1),
+            pytz.timezone('Europe/Berlin').localize(timestamps[-1]) + dt.timedelta(hours=1),
+        )
+
+
+def test_timestamp_series_get_gaps_start_and_end_no_timezone():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, 1]
+    ts = TimestampSeries.create_from_lists(
+        timestamps,
+        values,
+        freq=pd.offsets.Hour(),
+        time_zone="Europe/Berlin"
+    )
+    gaps = ts.get_gaps(
+        timestamps[0] - dt.timedelta(hours=1),
+        timestamps[-1] + dt.timedelta(hours=1),
+    )
+    assert gaps == [
+        pytz.timezone('Europe/Berlin').localize(timestamps[0]) - dt.timedelta(
+            hours=1),
+        pytz.timezone('Europe/Berlin').localize(timestamps[-1]) + dt.timedelta(
+            hours=1),
     ]
 
 

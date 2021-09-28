@@ -43,8 +43,18 @@ class FrequencyMixin(BaseMixin):
         if (not start or not end) and self._series.empty:
             raise ValueError('cannot fill the gaps for empty series '
                              'without parameters providing start and end.')
+
         start = start or self._series.index[0].to_pydatetime()
         end = end or self._series.index[-1].to_pydatetime()
+        time_zone = self._get_time_zone()
+
+        if start.tzinfo and start.tzinfo != time_zone:
+            raise ValueError('time zone of parameter start does not match '
+                             'the time zone of the series')
+        if end.tzinfo and end.tzinfo != time_zone:
+            raise ValueError('time zone of parameter end does not match '
+                             'the time zone of the series')
+
         expected_index = pd.date_range(
             start, end, freq=self._freq, tz=self._get_time_zone())
         self._series = self._series.reindex(
@@ -75,6 +85,15 @@ class FrequencyMixin(BaseMixin):
         tmp_series = copy.deepcopy(self)
         start = start or self._series.index[0].to_pydatetime()
         end = end or self._series.index[-1].to_pydatetime()
+        time_zone = self._get_time_zone()
+
+        if start.tzinfo and start.tzinfo != time_zone:
+            raise ValueError('time zone of parameter start does not match '
+                             'the time zone of the series')
+        if end.tzinfo and end.tzinfo != time_zone:
+            raise ValueError('time zone of parameter end does not match '
+                             'the time zone of the series')
+
         tmp_series.fill_gaps(start, end)
         gap_series = tmp_series._series[tmp_series._series.isnull()]
         return gap_series.index.to_pydatetime().tolist()
