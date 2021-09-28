@@ -3,10 +3,10 @@ bump2version==1.0.1
 wheel==0.37.0
 watchdog==2.1.5
 flake8==3.9.2
-tox==3.24.3
+tox==3.24.4
 coverage==5.5
 Sphinx==4.2.0
-sphinx-rtd-theme==0.5.2
+sphinx-rtd-theme==1.0.0
 twine==3.4.2
 pytest==6.2.5
 pytest-runner==5.3.1
