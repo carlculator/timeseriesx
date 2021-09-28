@@ -849,6 +849,26 @@ def test_timestamp_series_fill_gaps_start_and_end_different_timezone():
             value=2
         )
 
+def test_timestamp_series_fill_gaps_start_different_timezone():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, 1]
+    ts = TimestampSeries.create_from_lists(
+        timestamps,
+        values,
+        freq=pd.offsets.Hour(),
+        time_zone="UTC"
+    )
+    with pytest.raises(ValueError):
+        ts.fill_gaps(
+            pytz.timezone('Europe/Berlin').localize(timestamps[0]) - dt.timedelta(hours=1),
+            value=2
+        )
+
+
 
 def test_timestamp_series_fill_gaps_start_and_end_no_timezone():
     timestamps = [
