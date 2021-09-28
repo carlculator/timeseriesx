@@ -750,8 +750,17 @@ def test_timestamp_series_subtract_pd_series_mismatch():
     assert result_ts.values == [0., 0., 2.]
 
 
-def test_get_item(default_timestamp_series):
+def test_get_item_positional_index(default_timestamp_series):
     assert default_timestamp_series[0] == 0 * ureg.Unit('m')
+
+
+def test_get_item_datetime_index(default_timestamp_series):
+    assert default_timestamp_series[default_timestamp_series.start] == 0 * ureg.Unit('m')
+
+
+def test_get_item_naive_datetime_index(default_timestamp_series):
+    assert default_timestamp_series[
+               default_timestamp_series.start.replace(tzinfo=None)] == 0 * ureg.Unit('m')
 
 
 def test_loop(default_timestamp_series):
