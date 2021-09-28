@@ -750,8 +750,17 @@ def test_timestamp_series_subtract_pd_series_mismatch():
     assert result_ts.values == [0., 0., 2.]
 
 
-def test_get_item(default_timestamp_series):
+def test_get_item_positional_index(default_timestamp_series):
     assert default_timestamp_series[0] == 0 * ureg.Unit('m')
+
+
+def test_get_item_datetime_index(default_timestamp_series):
+    assert default_timestamp_series[default_timestamp_series.start] == 0 * ureg.Unit('m')
+
+
+def test_get_item_naive_datetime_index(default_timestamp_series):
+    assert default_timestamp_series[
+               default_timestamp_series.start.replace(tzinfo=None)] == 0 * ureg.Unit('m')
 
 
 def test_loop(default_timestamp_series):
@@ -809,10 +818,13 @@ def test_timestamp_series_fill_gaps():
         dt.datetime(2020, 3, 1, 17, 0, 0),
     ]
     values = [1, 1, 1]
-    ts = TimestampSeries.create_from_lists(timestamps, values, freq=pd.offsets.Hour())
-    ts = ts.fill_gaps(timestamps[0] - dt.timedelta(hours=1),
-                      timestamps[-1] + dt.timedelta(hours=1), value=2)
+    ts = TimestampSeries.create_from_lists(timestamps, values, freq=pd.offsets.Hour(),
+                                           time_zone='Europe/Berlin')
+    ts = ts.fill_gaps(ts.start - dt.timedelta(hours=1),
+                      ts.end + dt.timedelta(hours=1), value=2)
     assert len(ts) == 5
+    assert ts.start == ts.time_zone.localize(timestamps[0]) - dt.timedelta(hours=1)
+    assert ts.end == ts.time_zone.localize(timestamps[-1]) + dt.timedelta(hours=1)
     assert ts[timestamps[0] - dt.timedelta(hours=1)] == 2
     assert ts[timestamps[-1] + dt.timedelta(hours=1)] == 2
 
