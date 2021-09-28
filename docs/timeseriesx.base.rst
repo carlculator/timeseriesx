@@ -12,14 +12,6 @@ timeseriesx.base.base\_time\_series module
    :undoc-members:
    :show-inheritance:
 
-timeseriesx.base.time\_period\_series module
---------------------------------------------
-
-.. automodule:: timeseriesx.base.time_period_series
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 timeseriesx.base.timestamp\_series module
 -----------------------------------------
 

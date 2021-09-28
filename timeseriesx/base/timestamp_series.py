@@ -23,7 +23,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     @staticmethod
     def create_null_timeseries(start, end, freq, unit=None, time_zone='infer'):
         """
-        create a `TimestampSeries`-object from `start` to `end``with NaN-values
+        create a `TimestampSeries`-object from `start` to `end` with NaN-values
 
         :param str/datetime.datetime/pandas.Timestamp start: the start timestamp of the
             series (included)
@@ -449,6 +449,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not isinstance(other, (numbers.Number, Quantity)):
             raise ValueError('value is not numeric')
         tmp_series._series = getattr(tmp_series._series, operation)(other)
+        if isinstance(other, Quantity):
+            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     # ---------------------------- validation ------------------------------- #
