@@ -869,7 +869,6 @@ def test_timestamp_series_fill_gaps_start_different_timezone():
         )
 
 
-
 def test_timestamp_series_fill_gaps_start_and_end_no_timezone():
     timestamps = [
         dt.datetime(2020, 3, 1, 15, 0, 0),
