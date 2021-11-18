@@ -4,6 +4,7 @@ from collections import OrderedDict
 import dateutil
 import numpy as np
 import pandas as pd
+import pint
 import pytest
 import pytz
 from dateutil.tz import tzutc
@@ -278,8 +279,12 @@ def test_aggregate_without_unit():
     assert ts.aggregate(np.max) == 1.5
 
 
-def test_aggregate_with_unit(default_timestamp_series):
+def test_aggregate_without_returned_unit(default_timestamp_series):
     assert default_timestamp_series.aggregate(np.max) == 2.
+
+
+def test_aggregate_with_returned_unit(default_timestamp_series):
+    assert default_timestamp_series.aggregate(np.max, with_unit=True) == 2. * pint.Unit('m')
 
 
 def test_sum_no_unit():
@@ -292,8 +297,12 @@ def test_sum_no_unit():
     assert ts.sum() == 2.7
 
 
-def test_sum_unit(default_timestamp_series):
+def test_sum_return_without_unit(default_timestamp_series):
     assert default_timestamp_series.sum() == 3.
+
+
+def test_sum_return_with_unit(default_timestamp_series):
+    assert default_timestamp_series.sum(with_unit=True) == 3. * pint.Unit('m')
 
 
 def test_mean_no_unit():
@@ -306,8 +315,12 @@ def test_mean_no_unit():
     assert ts.mean() == 1.35
 
 
-def test_mean_no_unit(default_timestamp_series):
+def test_mean_return_without_unit(default_timestamp_series):
     assert default_timestamp_series.mean() == 1.
+
+
+def test_mean_return_with_unit(default_timestamp_series):
+    assert default_timestamp_series.mean(with_unit=True) == 1. * pint.Unit('m')
 
 
 def test_round_no_unit():
