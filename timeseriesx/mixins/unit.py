@@ -30,6 +30,19 @@ class UnitMixin(BaseMixin):
         else:
             return self._series.pint.magnitude
 
+    def aggregate(self, func):
+        """
+        aggregate all values of the series with a custom aggregation function
+
+        :param function func: a function mapping a numeric list/array/vector to a scalar
+        :return: the aggregated value
+        :rtype: numpy.float/numpy.int
+        """
+        if self._unit is None:
+            return self._series.agg(func)
+        else:
+            return self._get_magnitude_series().agg(func)
+
     def as_pd_series(self, include_nan=True):
         tmp_series = self._get_magnitude_series()
         if include_nan:

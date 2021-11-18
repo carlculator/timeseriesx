@@ -272,12 +272,32 @@ def test_aggregate(default_timestamp_series):
     assert default_timestamp_series.aggregate(np.min) == 0. * ureg.Unit('m')
 
 
-def test_sum(default_timestamp_series):
-    assert default_timestamp_series.sum() == 3. * ureg.Unit('m')
+def test_sum_no_unit():
+    timestamps = [
+        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
+        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+    ]
+    values = [1.2, 1.5]
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.sum() == 2.7
 
 
-def test_mean(default_timestamp_series):
-    assert default_timestamp_series.mean() == 1. * ureg.Unit('m')
+def test_sum_unit(default_timestamp_series):
+    assert default_timestamp_series.sum() == 3.
+
+
+def test_mean_no_unit():
+    timestamps = [
+        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
+        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+    ]
+    values = [1.2, 1.5]
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.mean() == 1.35
+
+
+def test_mean_no_unit(default_timestamp_series):
+    assert default_timestamp_series.mean() == 1.
 
 
 def test_round_no_unit():
