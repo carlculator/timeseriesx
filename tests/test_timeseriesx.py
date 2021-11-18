@@ -268,8 +268,18 @@ def test_map_with_dimension(default_timestamp_series):
     assert mapped_ts._series.dtype.units == ureg.Unit('m')
 
 
-def test_aggregate(default_timestamp_series):
-    assert default_timestamp_series.aggregate(np.min) == 0. * ureg.Unit('m')
+def test_aggregate_without_unit():
+    timestamps = [
+        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
+        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+    ]
+    values = [1.2, 1.5]
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.aggregate(np.max) == 1.5
+
+
+def test_aggregate_with_unit(default_timestamp_series):
+    assert default_timestamp_series.aggregate(np.max) == 2.
 
 
 def test_sum_no_unit():
