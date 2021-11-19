@@ -39,7 +39,7 @@ class UnitMixin(BaseMixin):
         :param boolean with_unit: flag whether to return the result as a pint
             object, defaults to False
         :return: the aggregated value
-        :rtype: numpy.float/numpy.int
+        :rtype: numpy.float/numpy.int/pint.Quantity
         """
         if self._unit is None or with_unit:
             return self._series.agg(func)
@@ -53,7 +53,7 @@ class UnitMixin(BaseMixin):
         :param boolean with_unit: flag whether to return the result as a pint
             object, defaults to False
         :return: the sum of the values
-        :rtype: numpy.float/numpy.int
+        :rtype: numpy.float/numpy.int/pint.Quantity
         """
         return self.aggregate(np.sum, with_unit)
 
@@ -64,7 +64,7 @@ class UnitMixin(BaseMixin):
         :param boolean with_unit: flag whether to return the result as a pint
             object, defaults to False
         :return: the mean of the values
-        :rtype: numpy.float/numpy.int
+        :rtype: numpy.float/numpy.int/pint.Quantity
         """
         return self.aggregate(np.mean, with_unit)
 
