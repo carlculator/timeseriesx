@@ -50,7 +50,7 @@ class FrequencyMixin(BaseMixin):
         try:
             expected_index = pd.date_range(
                 start, end, freq=self._freq, tz=self._get_time_zone())
-        except AssertionError:
+        except (AssertionError, TypeError):
             raise ValueError('time zone of parameter start or end does not match '
                              'the time zone of the series')
         self._series = self._series.reindex(

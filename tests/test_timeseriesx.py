@@ -4,6 +4,7 @@ from collections import OrderedDict
 import dateutil
 import numpy as np
 import pandas as pd
+import pint
 import pytest
 import pytz
 from dateutil.tz import tzutc
@@ -268,16 +269,58 @@ def test_map_with_dimension(default_timestamp_series):
     assert mapped_ts._series.dtype.units == ureg.Unit('m')
 
 
-def test_aggregate(default_timestamp_series):
-    assert default_timestamp_series.aggregate(np.min) == 0. * ureg.Unit('m')
+def test_aggregate_without_unit():
+    timestamps = [
+        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
+        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+    ]
+    values = [1.2, 1.5]
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.aggregate(np.max) == 1.5
 
 
-def test_sum(default_timestamp_series):
-    assert default_timestamp_series.sum() == 3. * ureg.Unit('m')
+def test_aggregate_without_returned_unit(default_timestamp_series):
+    assert default_timestamp_series.aggregate(np.max) == 2.
 
 
-def test_mean(default_timestamp_series):
-    assert default_timestamp_series.mean() == 1. * ureg.Unit('m')
+def test_aggregate_with_returned_unit(default_timestamp_series):
+    assert default_timestamp_series.aggregate(np.max, with_unit=True) == 2. * pint.Unit('m')
+
+
+def test_sum_no_unit():
+    timestamps = [
+        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
+        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+    ]
+    values = [1.2, 1.5]
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.sum() == 2.7
+
+
+def test_sum_return_without_unit(default_timestamp_series):
+    assert default_timestamp_series.sum() == 3.
+
+
+def test_sum_return_with_unit(default_timestamp_series):
+    assert default_timestamp_series.sum(with_unit=True) == 3. * pint.Unit('m')
+
+
+def test_mean_no_unit():
+    timestamps = [
+        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
+        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+    ]
+    values = [1.2, 1.5]
+    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
+    assert ts.mean() == 1.35
+
+
+def test_mean_return_without_unit(default_timestamp_series):
+    assert default_timestamp_series.mean() == 1.
+
+
+def test_mean_return_with_unit(default_timestamp_series):
+    assert default_timestamp_series.mean(with_unit=True) == 1. * pint.Unit('m')
 
 
 def test_round_no_unit():
@@ -846,6 +889,25 @@ def test_timestamp_series_fill_gaps_start_and_end_different_timezone():
         ts.fill_gaps(
             pytz.timezone('Europe/Berlin').localize(timestamps[0]) - dt.timedelta(hours=1),
             pytz.timezone('Europe/Berlin').localize(timestamps[-1]) + dt.timedelta(hours=1),
+            value=2
+        )
+
+def test_timestamp_series_fill_gaps_start_different_timezone():
+    timestamps = [
+        dt.datetime(2020, 3, 1, 15, 0, 0),
+        dt.datetime(2020, 3, 1, 16, 0, 0),
+        dt.datetime(2020, 3, 1, 17, 0, 0),
+    ]
+    values = [1, 1, 1]
+    ts = TimestampSeries.create_from_lists(
+        timestamps,
+        values,
+        freq=pd.offsets.Hour(),
+        time_zone="UTC"
+    )
+    with pytest.raises(ValueError):
+        ts.fill_gaps(
+            pytz.timezone('Europe/Berlin').localize(timestamps[0]) - dt.timedelta(hours=1),
             value=2
         )
 

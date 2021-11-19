@@ -1,6 +1,7 @@
 import warnings
 
 import pandas as pd
+import numpy as np
 from pint_pandas import (
     PintArray,
     PintType,
@@ -29,6 +30,43 @@ class UnitMixin(BaseMixin):
             return self._series
         else:
             return self._series.pint.magnitude
+
+    def aggregate(self, func, with_unit=False):
+        """
+        aggregate all values of the series with a custom aggregation function
+
+        :param function func: a function mapping a numeric list/array/vector to a scalar
+        :param boolean with_unit: flag whether to return the result as a pint
+            object, defaults to False
+        :return: the aggregated value
+        :rtype: numpy.float/numpy.int/pint.Quantity
+        """
+        if self._unit is None or with_unit:
+            return self._series.agg(func)
+        else:
+            return self._get_magnitude_series().agg(func)
+
+    def sum(self, with_unit=False):
+        """
+        calculate the sum of all values of the series
+
+        :param boolean with_unit: flag whether to return the result as a pint
+            object, defaults to False
+        :return: the sum of the values
+        :rtype: numpy.float/numpy.int/pint.Quantity
+        """
+        return self.aggregate(np.sum, with_unit)
+
+    def mean(self, with_unit=False):
+        """
+        calculate the mean of all values of the series
+
+        :param boolean with_unit: flag whether to return the result as a pint
+            object, defaults to False
+        :return: the mean of the values
+        :rtype: numpy.float/numpy.int/pint.Quantity
+        """
+        return self.aggregate(np.mean, with_unit)
 
     def as_pd_series(self, include_nan=True):
         tmp_series = self._get_magnitude_series()
