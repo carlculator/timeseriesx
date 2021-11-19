@@ -3,6 +3,13 @@ History
 =======
 
 
+0.1.9 (2021-11-19)
+------------------
+
+* allow aggregation functions to return magnitudes or quantities
+* update dependencies
+
+
 0.1.8 (2021-09-28)
 ------------------
 
