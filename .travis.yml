@@ -1,3 +1,8 @@
+os: linux
+arch:
+  - arm64
+  - ppc64le
+  - s390x
 language: python
 env:
   global:
@@ -25,8 +30,3 @@ deploy:
     tags: true
     repo: carlculator/timeseriesx
     python: 3.9
-os: linux
-arch:
-  - arm64
-  - ppc64le
-  - s390x
