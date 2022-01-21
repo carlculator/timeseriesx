@@ -61,7 +61,7 @@ def test_timestamp_series_create_from_lists_mismatching_length():
         dt.datetime(2020, 3, 1, 15, 0, 0),
         dt.datetime(2020, 3, 1, 16, 0, 0),
     ]
-    values = [-1,]
+    values = [-1]
     with pytest.raises(ValueError):
         TimestampSeries.create_from_lists(timestamps, values)
 
@@ -387,7 +387,7 @@ def test_create_timestamp_series_inferred_time_zone_none():
     assert ts._series.index.tzinfo is None
 
 
-def test_create_timestamp_series_inferred_time_zone_valid():
+def test_create_timestamp_series_inferred_time_zone_valid_fixed_offset():
     timestamps = [
         pd.Timestamp('2020-01-01T00:00:00+01:00'),
         pd.Timestamp('2020-01-03T00:00:00+01:00'),
@@ -813,14 +813,44 @@ def test_loop(default_timestamp_series):
 
 def test_eq(default_timestamp_series):
     ts1 = TimestampSeries.create_from_tuples(
-        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('EST'), 1.)],
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('EST'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC').tz_convert('EST'), 2.)],
         unit='km', freq=None,
     )
     ts2 = TimestampSeries.create_from_tuples(
-        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('GMT'), 1000.)],
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('GMT'), 1000.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC').tz_convert('GMT'), 2000.)],
         unit='m', freq=None,
     )
     assert ts1 == ts2
+
+
+def test_neq_1(default_timestamp_series):
+    ts1 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('EST'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('EST'), 2.)],
+        unit='km', freq=None,
+    )
+    ts2 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('GMT'), 1000.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC').tz_convert('GMT'), 2000.)],
+        unit='m', freq=None,
+    )
+    assert ts1 != ts2
+
+
+def test_neq_2(default_timestamp_series):
+    ts1 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('EST'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC').tz_convert('EST'), 3.)],
+        unit='km', freq=None,
+    )
+    ts2 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC').tz_convert('GMT'), 1000.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC').tz_convert('GMT'), 2000.)],
+        unit='m', freq=None,
+    )
+    assert ts1 != ts2
 
 
 def test_timestamp_series_convert_unit_from_none():
@@ -891,6 +921,7 @@ def test_timestamp_series_fill_gaps_start_and_end_different_timezone():
             pytz.timezone('Europe/Berlin').localize(timestamps[-1]) + dt.timedelta(hours=1),
             value=2
         )
+
 
 def test_timestamp_series_fill_gaps_start_different_timezone():
     timestamps = [
