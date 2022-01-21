@@ -387,7 +387,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             other_timestamps = tmp_other.timestamps
 
         return self_timestamps == other_timestamps \
-               and self_values == other_values
+               and (self_values == other_values).all()
 
     def __setitem__(self, key, value):
         raise NotImplementedError()
