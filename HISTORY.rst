@@ -2,8 +2,9 @@
 History
 =======
 
+
 0.1.10 (2021-01-21)
-------------------
+-------------------
 
 * fix equals method
 * update dependencies
