@@ -106,7 +106,11 @@ class FrequencyMixin(BaseMixin):
                 'can only resample to smaller frequencies (larger offsets)'
             )
         freq = coerce_freq(freq)
-        self._series = getattr(self._series.resample(freq), 'aggregate')(method)
+        # perform the aggregation on a tmp_series to avoid
+        # potential problems with units
+        tmp_series = self.as_pd_series()
+        tmp_series = getattr(tmp_series.resample(freq), 'aggregate')(method)
+        self._series = tmp_series.astype(self._series.dtype)
         self._freq = freq
         return self
 

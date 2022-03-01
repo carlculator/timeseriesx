@@ -1082,6 +1082,19 @@ def test_timestamp_series_get_gaps_with_unit(default_timestamp_series):
     assert gaps == [end]
 
 
+def test_timestamp_series_resample_without_unit():
+    ts = TimestampSeries(
+        pd.Series(np.ones(48),
+                  index=pd.date_range('2020-01-01', freq='H', periods=48, tz='CET')
+                  ),
+        time_zone='CET', freq='H',
+    )
+    ts = ts.resample('D', 'sum')
+    assert ts.freq == pd.offsets.Day()
+    assert ts.values == [24, 24]
+    assert ts.unit == None
+
+
 def test_timestamp_series_resample_str_method():
     ts = TimestampSeries(
         pd.Series(np.ones(48),
@@ -1092,6 +1105,19 @@ def test_timestamp_series_resample_str_method():
     ts = ts.resample('D', 'sum')
     assert ts.freq == pd.offsets.Day()
     assert ts.values == [24, 24]
+    assert ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_resample_missing_values():
+    ts = TimestampSeries(
+        pd.Series(list(np.ones(12)) + list(np.repeat(np.nan, 12)),
+                  index=pd.date_range('2020-01-01', freq='H', periods=24, tz='CET')
+                  ),
+        time_zone='CET', freq='H', unit='m',
+    )
+    ts = ts.resample('D', 'sum')
+    assert ts.freq == pd.offsets.Day()
+    assert ts.values == [12]
     assert ts.unit == ureg.Unit('m')
 
 
