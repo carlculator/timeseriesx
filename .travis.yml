@@ -4,21 +4,13 @@ arch:
   - ppc64le
   - s390x
 language: python
-env:
-  global:
-    - CC_TEST_REPORTER_ID=f0f58a84abac073113c3a0d8f9d1315fa83ed580a3d5f95fe9fdfeecaff3302d
 python:
 - 3.9
 - 3.8
 - 3.7
 install: pip install -U tox-travis coverage
-before_script:  # code coverage tool
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
 script: tox
 after_script:
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.9" ]]; then ./cc-test-reporter after-build -t coverage.py --exit-code $TRAVIS_TEST_RESULT; fi
   - coverage erase
 deploy:
   provider: pypi
