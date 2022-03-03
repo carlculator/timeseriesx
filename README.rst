@@ -7,15 +7,15 @@ TimeSeriesX
         :target: https://pypi.python.org/pypi/timeseriesx
 
 .. image:: https://travis-ci.com/carlculator/timeseriesx.svg?branch=master
-    :target: https://travis-ci.com/carlculator/timeseriesx
+        :target: https://app.travis-ci.com/github/carlculator/timeseriesx
 
 .. image:: https://readthedocs.org/projects/timeseriesx/badge/?version=latest
         :target: https://timeseriesx.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/carlculator/timeseriesx/shield.svg
-     :target: https://pyup.io/repos/github/carlculator/timeseriesx/
-     :alt: Updates
+        :target: https://pyup.io/repos/github/carlculator/timeseriesx/
+        :alt: Updates
 
 
 The eXtended time series library.
