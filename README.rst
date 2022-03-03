@@ -17,10 +17,6 @@ TimeSeriesX
      :target: https://pyup.io/repos/github/carlculator/timeseriesx/
      :alt: Updates
 
-.. image:: https://api.codeclimate.com/v1/badges/8777e8089ca4fe83e8ab/test_coverage
-   :target: https://codeclimate.com/github/carlculator/timeseriesx/test_coverage
-   :alt: Test Coverage
-
 
 The eXtended time series library.
 
