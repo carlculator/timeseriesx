@@ -6,7 +6,7 @@ TimeSeriesX
 .. image:: https://img.shields.io/pypi/v/timeseriesx.svg
         :target: https://pypi.python.org/pypi/timeseriesx
 
-.. image:: https://travis-ci.com/carlculator/timeseriesx.svg?branch=master
+.. image:: https://travis-ci.com/carlculator/timeseriesx.svg?branch=develop
         :target: https://app.travis-ci.com/github/carlculator/timeseriesx
 
 .. image:: https://readthedocs.org/projects/timeseriesx/badge/?version=latest
