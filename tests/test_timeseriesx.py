@@ -755,10 +755,9 @@ def test_timestamp_series_div_scalar(default_timestamp_series):
     assert result_ts.values == [0., .5, 1.]
 
 
-@pytest.mark.skip('should work')  # Todo: to be reported @pint_pandas
-def test_timestamp_series_floordiv_scalar(default_timestamp_series):
-    result_ts = default_timestamp_series // 2
-    assert result_ts.values == [0., 0., 1.]
+def test_timestamp_series_floordiv_pint_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series // (2 * ureg.Unit('m'))
+    assert result_ts.values == [0, 0, 1]
 
 
 def test_timestamp_series_div_pint_scalar():
