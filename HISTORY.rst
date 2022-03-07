@@ -3,7 +3,14 @@ History
 =======
 
 
-0.1.10 (2021-01-21)
+0.1.11 (2022-03-07)
+-------------------
+
+* fix resampling method to support nan-values
+* update dependencies
+
+
+0.1.10 (2022-01-21)
 -------------------
 
 * fix equals method
