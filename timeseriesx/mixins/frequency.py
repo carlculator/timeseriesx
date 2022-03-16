@@ -93,9 +93,10 @@ class FrequencyMixin(BaseMixin):
         :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
             the new frequency, has to be smaller than the current frequency
             (greater offset)
-        :param str/Callable method: aggregation method, e.g. 'mean', 'sum', 'min', 'max'
-            or function that a collection (e.g. pandas.Series or list) of numeric values as its
-            argument and returns a scalar
+        :param str/Callable method: aggregation method, currently supported
+            are "all", "any", "min", "max", "sum", "mean", "median", or function
+            that a collection (e.g. pandas.Series or list) of numeric values as
+            its argument and returns a scalar
         :return: the resamples time series
         :rtype: BaseTimeSeries
         """
@@ -107,7 +108,12 @@ class FrequencyMixin(BaseMixin):
                 'can only resample to smaller frequencies (larger offsets)'
             )
         freq = coerce_freq(freq)
-        self._series = getattr(self._series.resample(freq), 'aggregate')(method)
+        # perform the aggregation on a tmp_series to avoid
+        # potential problems with units. Issue with unit aggregations has been
+        # reported to pint-pandas https://github.com/hgrecco/pint-pandas/issues/117
+        tmp_series = self.as_pd_series()
+        tmp_series = getattr(tmp_series.resample(freq), 'aggregate')(method)
+        self._series = tmp_series.astype(self._series.dtype)
         self._freq = freq
         return self
 

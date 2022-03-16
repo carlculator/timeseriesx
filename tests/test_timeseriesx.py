@@ -755,10 +755,9 @@ def test_timestamp_series_div_scalar(default_timestamp_series):
     assert result_ts.values == [0., .5, 1.]
 
 
-@pytest.mark.skip('should work')  # Todo: to be reported @pint_pandas
-def test_timestamp_series_floordiv_scalar(default_timestamp_series):
-    result_ts = default_timestamp_series // 2
-    assert result_ts.values == [0., 0., 1.]
+def test_timestamp_series_floordiv_pint_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series // (2 * ureg.Unit('m'))
+    assert result_ts.values == [0, 0, 1]
 
 
 def test_timestamp_series_div_pint_scalar():
@@ -1110,6 +1109,19 @@ def test_timestamp_series_get_gaps_with_unit(default_timestamp_series):
     assert gaps == [end]
 
 
+def test_timestamp_series_resample_without_unit():
+    ts = TimestampSeries(
+        pd.Series(np.ones(48),
+                  index=pd.date_range('2020-01-01', freq='H', periods=48, tz='CET')
+                  ),
+        time_zone='CET', freq='H',
+    )
+    ts = ts.resample('D', 'sum')
+    assert ts.freq == pd.offsets.Day()
+    assert ts.values == [24, 24]
+    assert ts.unit == None
+
+
 def test_timestamp_series_resample_str_method():
     ts = TimestampSeries(
         pd.Series(np.ones(48),
@@ -1120,6 +1132,19 @@ def test_timestamp_series_resample_str_method():
     ts = ts.resample('D', 'sum')
     assert ts.freq == pd.offsets.Day()
     assert ts.values == [24, 24]
+    assert ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_resample_missing_values():
+    ts = TimestampSeries(
+        pd.Series(list(np.ones(12)) + list(np.repeat(np.nan, 12)),
+                  index=pd.date_range('2020-01-01', freq='H', periods=24, tz='CET')
+                  ),
+        time_zone='CET', freq='H', unit='m',
+    )
+    ts = ts.resample('D', 'sum')
+    assert ts.freq == pd.offsets.Day()
+    assert ts.values == [12]
     assert ts.unit == ureg.Unit('m')
 
 

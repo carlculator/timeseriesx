@@ -6,20 +6,16 @@ TimeSeriesX
 .. image:: https://img.shields.io/pypi/v/timeseriesx.svg
         :target: https://pypi.python.org/pypi/timeseriesx
 
-.. image:: https://travis-ci.com/carlculator/timeseriesx.svg?branch=master
-    :target: https://travis-ci.com/carlculator/timeseriesx
+.. image:: https://travis-ci.com/carlculator/timeseriesx.svg?branch=develop
+        :target: https://app.travis-ci.com/github/carlculator/timeseriesx
 
 .. image:: https://readthedocs.org/projects/timeseriesx/badge/?version=latest
         :target: https://timeseriesx.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
 .. image:: https://pyup.io/repos/github/carlculator/timeseriesx/shield.svg
-     :target: https://pyup.io/repos/github/carlculator/timeseriesx/
-     :alt: Updates
-
-.. image:: https://api.codeclimate.com/v1/badges/8777e8089ca4fe83e8ab/test_coverage
-   :target: https://codeclimate.com/github/carlculator/timeseriesx/test_coverage
-   :alt: Test Coverage
+        :target: https://pyup.io/repos/github/carlculator/timeseriesx/
+        :alt: Updates
 
 
 The eXtended time series library.
