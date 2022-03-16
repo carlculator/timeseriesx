@@ -374,9 +374,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         self_timestamps = self.timestamps
         other_timestamps = other.timestamps
         if self.unit:
-            self_values = self._series.pint.to_base_units().values.data
+            self_values = list(self._series.pint.to_base_units().values)
         if other.unit:
-            other_values = other._series.pint.to_base_units().values.data
+            other_values = list(other._series.pint.to_base_units().values)
         if self.time_zone:
             tmp_self = copy.deepcopy(self)
             tmp_self.convert_time_zone('UTC')
@@ -386,8 +386,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             tmp_other.convert_time_zone('UTC')
             other_timestamps = tmp_other.timestamps
 
-        return self_timestamps == other_timestamps \
-               and (self_values == other_values).all()
+        return self_timestamps == other_timestamps and self_values == other_values
 
     def __setitem__(self, key, value):
         raise NotImplementedError()

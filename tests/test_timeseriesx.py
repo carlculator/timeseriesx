@@ -853,6 +853,34 @@ def test_neq_2(default_timestamp_series):
     assert ts1 != ts2
 
 
+def test_neq_3(default_timestamp_series):
+    ts1 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC'), 2.)],
+        unit='m', freq=None,
+    )
+    ts2 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC'), 2.)],
+        unit=None, freq=None,
+    )
+    assert ts1 != ts2
+
+
+def test_neq_4(default_timestamp_series):
+    ts1 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC'), 2.)],
+        unit=None, freq=None,
+    )
+    ts2 = TimestampSeries.create_from_tuples(
+        [(pd.Timestamp(2020, 1, 1).tz_localize('UTC'), 1.),
+         (pd.Timestamp(2020, 1, 2).tz_localize('UTC'), 2.)],
+        unit='m', freq=None,
+    )
+    assert ts1 != ts2
+
+
 def test_timestamp_series_convert_unit_from_none():
     ts = TimestampSeries(
         pd.Series(np.arange(3),
