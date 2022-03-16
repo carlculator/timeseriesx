@@ -90,8 +90,9 @@ class FrequencyMixin(BaseMixin):
         """
         resample the series to a smaller frequency, aggregate the values
 
-        :param freq: the new frequency, has to be smaller than the current
-            frequency (greater offset)
+        :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
+            the new frequency, has to be smaller than the current frequency
+            (greater offset)
         :param str/Callable method: aggregation method, currently supported
             are "all", "any", "min", "max", "sum", "mean", "median", or function
             that a collection (e.g. pandas.Series or list) of numeric values as
