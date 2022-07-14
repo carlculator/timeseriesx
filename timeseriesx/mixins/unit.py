@@ -1,13 +1,12 @@
 import warnings
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from pint import DimensionalityError
 from pint_pandas import (
     PintArray,
     PintType,
 )
-
-from timeseriesx import ureg
 from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.unit import coerce_unit
 
@@ -97,9 +96,9 @@ class UnitMixin(BaseMixin):
                     index=self._series.index,
                 )
             else:
-                if ureg.is_compatible_with(self._unit, unit):
+                try:
                     self._series = self._series.pint.to(unit)
-                else:
+                except DimensionalityError:
                     raise ValueError(f'{unit} unit is not compatible with {self._unit}')
         self._unit = unit
         return self
