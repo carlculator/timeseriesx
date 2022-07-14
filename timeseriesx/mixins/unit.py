@@ -11,6 +11,10 @@ from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.unit import coerce_unit
 
 
+class UnitWarning(Warning):
+    pass
+
+
 class UnitMixin(BaseMixin):
 
     def __init__(self, *args, **kwargs):
@@ -112,7 +116,9 @@ class UnitMixin(BaseMixin):
                 except ValueError:
                     raise ValueError()
                 else:
-                    warnings.warn('passed unit and unit of series do not conform')
+                    warnings.warn('passed unit and unit of series do not conform, '
+                                  'converted unit to the given unit',
+                                  category=UnitWarning)
         else:
             self.convert_unit(self._unit)
 
