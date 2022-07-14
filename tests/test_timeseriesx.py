@@ -8,7 +8,6 @@ import pint
 import pytest
 import pytz
 from dateutil.tz import tzutc
-from pint import DimensionalityError
 from pint_pandas import PintArray
 from pytz import UnknownTimeZoneError
 
@@ -498,7 +497,7 @@ def test_create_timestamp_series_mismatching_compatible_unit():
 
 
 def test_create_timestamp_series_mismatching_incompatible_unit():
-    with pytest.raises(DimensionalityError):
+    with pytest.raises(ValueError):
         TimestampSeries(series=pd.Series(PintArray([0., 1., 2.], dtype='m'), index=[
             pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
             pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
