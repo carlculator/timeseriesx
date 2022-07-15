@@ -20,7 +20,7 @@ from timeseriesx.validation.timestamp_index import (
 )
 
 
-class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
+class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
 
     @staticmethod
     def create_null_timeseries(start, end, freq, unit=None, time_zone='infer'):
@@ -352,9 +352,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     # ---------------------------- magic methods  ---------------------------- #
 
     def __str__(self):
-        return f"Time zone: {str(self._time_zone)}, " \
-               f"Freq: {getattr(self._freq, 'freqstr', '')}, " \
-               f"Unit: {str(self._unit or None)}\n" \
+        return f"Time zone: {str(self.time_zone)}, " \
+               f"Freq: {getattr(self.freq, 'freqstr', None)}, " \
+               f"Unit: {str(self.unit or None)}\n" \
                f"{str(self._series)}"
 
     def __repr__(self):
@@ -420,6 +420,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if self.freq != other.freq:
             raise ValueError("The time series have different frequencies")
         if not self.unit == other.unit:
+            # ToDo: raise error only for add/sub, not for mul/div
             raise ValueError("The time series have different units")
         if not self._series.index.equals(other._series.index):
             warnings.warn("timestamps do not match, values are auto-filled",
@@ -442,8 +443,6 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         # enforce resulting TimestampSeries' time zone to be equal to initial
         # TimestampSeries (self)
         tmp_series.convert_time_zone(self.time_zone)
-        if isinstance(tmp_series._series.dtype, PintType):
-            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     def _basic_calc_collection(self, operation, other):
@@ -453,8 +452,6 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not all(map(lambda x: isinstance(x, (numbers.Number, Quantity)), other)):
             raise ValueError("sequence contains non-numeric values")
         tmp_series._series = getattr(tmp_series._series, operation)(other)
-        if isinstance(tmp_series._series.dtype, PintType):
-            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     def _basic_calc_scalar(self, operation, other):
@@ -462,15 +459,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not isinstance(other, (numbers.Number, Quantity)):
             raise ValueError('value is not numeric')
         tmp_series._series = getattr(tmp_series._series, operation)(other)
-        if isinstance(other, Quantity):
-            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     # ---------------------------- validation ------------------------------- #
-
-    def validate_all(self):
-        self._validate()
-        super()._validate_all()
 
     def _validate(self):
         index_is_datetime(self._series)

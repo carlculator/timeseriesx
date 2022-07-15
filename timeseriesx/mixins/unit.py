@@ -19,17 +19,18 @@ class UnitMixin(BaseMixin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._unit = kwargs.get("unit", None)
-        if self._unit:
-            self._unit = coerce_unit(self._unit)
-        self._validate_unit()
+        unit = kwargs.get("unit", None)
+        self._validate_unit(unit)
 
     @property
     def unit(self):
-        return self._unit
+        if isinstance(self._series.dtype, PintType):
+            return self._series.pint.u
+        else:
+            return None
 
     def _get_magnitude_series(self):
-        if self._unit is None:
+        if self.unit is None:
             return self._series
         else:
             return self._series.pint.magnitude
@@ -44,7 +45,7 @@ class UnitMixin(BaseMixin):
         :return: the aggregated value
         :rtype: numpy.float/numpy.int/pint.Quantity
         """
-        if self._unit is None or with_unit:
+        if self.unit is None or with_unit:
             return self._series.agg(func)
         else:
             return self._get_magnitude_series().agg(func)
@@ -103,25 +104,14 @@ class UnitMixin(BaseMixin):
                 try:
                     self._series = self._series.pint.to(unit)
                 except DimensionalityError:
-                    raise ValueError(f'{unit} unit is not compatible with {self._unit}')
-        self._unit = unit
+                    raise ValueError(f'{unit} unit is not compatible with {self.unit}')
         return self
 
-    def _validate_unit(self):
-        coerce_unit(self._unit)
+    def _validate_unit(self, unit):
+        coerce_unit(unit)
         if isinstance(self._series.dtype, PintType):
-            if self._series.pint.u != self._unit:
-                try:
-                    self.convert_unit(self._unit)
-                except ValueError:
-                    raise ValueError()
-                else:
-                    warnings.warn('passed unit and unit of series do not conform, '
-                                  'converted unit to the given unit',
-                                  category=UnitWarning)
-        else:
-            self.convert_unit(self._unit)
-
-    def _validate_all(self):
-        super()._validate_all()
-        self._validate_unit()
+            if self.unit != unit:
+                warnings.warn('passed unit and unit of series do not conform, '
+                              'converted unit to the given unit',
+                              category=UnitWarning)
+        self.convert_unit(unit)

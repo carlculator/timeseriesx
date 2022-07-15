@@ -14,14 +14,14 @@ class FrequencyMixin(BaseMixin):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._freq = kwargs.get('freq', None)
-        if self._freq == 'infer':
-            self._freq = infer_freq(self._series)
-        self._validate_freq()
+        freq = kwargs.get('freq', None)
+        if freq == 'infer':
+            freq = infer_freq(self._series)
+        self._validate_freq(freq)
 
     @property
     def freq(self):
-        return self._freq
+        return self._series.index.freq
 
     def fill_gaps(self, start=None, end=None, value=np.NaN):
         """
@@ -38,7 +38,7 @@ class FrequencyMixin(BaseMixin):
         :return: return the series with filled gaps
         :rtype: BaseTimeSeries
         """
-        if not self._freq:
+        if not self.freq:
             raise ValueError('cannot determine gaps when freq is not set')
         if (not start or not end) and self._series.empty:
             raise ValueError('cannot fill the gaps for empty series '
@@ -49,7 +49,7 @@ class FrequencyMixin(BaseMixin):
 
         try:
             expected_index = pd.date_range(
-                start, end, freq=self._freq, tz=self._get_time_zone())
+                start, end, freq=self.freq, tz=self._get_time_zone())
         except (AssertionError, TypeError):
             raise ValueError('time zone of parameter start or end does not match '
                              'the time zone of the series')
@@ -72,7 +72,7 @@ class FrequencyMixin(BaseMixin):
         :return: list of timestamps
         :rtype: list of datetime.datetime
         """
-        if not self._freq:
+        if not self.freq:
             raise ValueError('cannot determine gaps when freq is not set')
         if (not start or not end) and self._series.empty:
             raise ValueError('cannot determine the gaps from empty series '
@@ -100,10 +100,10 @@ class FrequencyMixin(BaseMixin):
         :return: the resamples time series
         :rtype: BaseTimeSeries
         """
-        if not self._freq:
+        if not self.freq:
             raise ValueError('cannot resample when freq is not set')
         freq = coerce_freq(freq)
-        if self._freq >= freq:
+        if self.freq >= freq:
             raise ValueError(
                 'can only resample to smaller frequencies (larger offsets)'
             )
@@ -114,22 +114,14 @@ class FrequencyMixin(BaseMixin):
         tmp_series = self.as_pd_series()
         tmp_series = getattr(tmp_series.resample(freq), 'aggregate')(method)
         self._series = tmp_series.astype(self._series.dtype)
-        self._freq = freq
         return self
 
-    def _validate_freq(self):
-        self._freq = coerce_freq(self._freq)
+    def _validate_freq(self, freq):
+        freq = coerce_freq(freq)
         try:
-            self._series.index.freq = self._freq
+            self._series.index = pd.DatetimeIndex(self._series.index, freq=freq)
         except ValueError:
             raise ValueError('frequency does not conform to timestamps')
 
-    def _validate_all(self):
-        super()._validate_all()
-        self._validate_freq()
-
     def _get_time_zone(self):
-        if hasattr(self, 'time_zone'):
-            return self.time_zone
-        else:
-            return None
+        return getattr(self, 'time_zone', None)

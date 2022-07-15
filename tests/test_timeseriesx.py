@@ -40,6 +40,12 @@ def test_timestamp_series_create_null_timeseries():
     assert ts.freq == pd.offsets.Hour()
     assert ts.time_zone is pytz.UTC
     assert ts.unit is None
+    assert ts.timestamps == [
+        pytz.UTC.localize(dt.datetime(2020, 3, 1, 15, 0, 0)),
+        pytz.UTC.localize(dt.datetime(2020, 3, 1, 16, 0, 0)),
+        pytz.UTC.localize(dt.datetime(2020, 3, 1, 17, 0, 0)),
+    ]
+    assert np.array_equal(ts.values, [np.NaN] * 3, equal_nan=True)
 
 
 def test_timestamp_series_create_from_lists():
@@ -53,6 +59,8 @@ def test_timestamp_series_create_from_lists():
     assert ts.freq == pd.offsets.Hour()
     assert ts.time_zone is None
     assert ts.unit is None
+    assert ts.timestamps == timestamps
+    assert ts.values == values
 
 
 def test_timestamp_series_create_from_lists_mismatching_length():
@@ -67,8 +75,8 @@ def test_timestamp_series_create_from_lists_mismatching_length():
 
 def test_timestamp_series_properties_time_range_default(default_timestamp_series):
     assert default_timestamp_series.time_range == (
-           pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(),
-           pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime()
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0))
     )
 
 
@@ -87,7 +95,7 @@ def test_timestamp_series_properties_empty_empty(empty_timestamp_series):
 
 def test_timestamp_series_properties_start_default(default_timestamp_series):
     assert default_timestamp_series.start == \
-           pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime()
+           pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0))
 
 
 def test_timestamp_series_properties_start_empty(empty_timestamp_series):
@@ -97,7 +105,7 @@ def test_timestamp_series_properties_start_empty(empty_timestamp_series):
 
 def test_timestamp_series_properties_end_default(default_timestamp_series):
     assert default_timestamp_series.end == \
-           pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime()
+           pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0))
 
 
 def test_timestamp_series_properties_end_empty(empty_timestamp_series):
@@ -107,9 +115,9 @@ def test_timestamp_series_properties_end_empty(empty_timestamp_series):
 
 def test_timestamp_series_properties_timestamps_default(default_timestamp_series):
     assert default_timestamp_series.timestamps == [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize('CET').to_pydatetime(),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime()
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 2, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
     ]
 
 
@@ -127,7 +135,7 @@ def test_timestamp_series_properties_values_empty(empty_timestamp_series):
 
 def test_timestamp_series_properties_first_default(default_timestamp_series):
     assert default_timestamp_series.first == (
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(), 0.
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)), 0.
     )
 
 
@@ -138,7 +146,7 @@ def test_timestamp_series_properties_first_empty(empty_timestamp_series):
 
 def test_timestamp_series_properties_last_default(default_timestamp_series):
     assert default_timestamp_series.last == (
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime(), 2.
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)), 2.
     )
 
 
@@ -149,9 +157,9 @@ def test_timestamp_series_properties_last_empty(empty_timestamp_series):
 
 def test_timestamp_series_as_tuples_default(default_timestamp_series):
     assert default_timestamp_series.as_tuples() == [
-        (pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(), 0.),
-        (pd.Timestamp('2020-01-02T00:00:00').tz_localize('CET').to_pydatetime(), 1.),
-        (pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime(), 2.),
+        (pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)), 0.),
+        (pytz.timezone('CET').localize(dt.datetime(2020, 1, 2, 0, 0, 0)), 1.),
+        (pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)), 2.),
     ]
 
 
@@ -161,17 +169,17 @@ def test_timestamp_series_as_tuples_empty(empty_timestamp_series):
 
 def test_timestamp_series_as_dict_default(default_timestamp_series):
     assert default_timestamp_series.as_dict() == {
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(): 0.,
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize('CET').to_pydatetime(): 1.,
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime(): 2.,
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)): 0.,
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 2, 0, 0, 0)): 1.,
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)): 2.,
     }
 
 
 def test_timestamp_series_as_dict_ordered_default(default_timestamp_series):
     assert default_timestamp_series.as_dict(ordered=True) == OrderedDict({
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(): 0.,
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize('CET').to_pydatetime(): 1.,
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime(): 2.,
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)): 0.,
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 2, 0, 0, 0)): 1.,
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)): 2.,
     })
 
 
@@ -246,17 +254,20 @@ def test_timestamp_series_str_default(default_timestamp_series):
 
 
 def test_timestamp_series_str_empty(empty_timestamp_series):
-    assert "Freq: " in str(empty_timestamp_series)
-    assert "Unit: " in str(empty_timestamp_series)
-    assert "Time zone: " in str(empty_timestamp_series)
+    assert "Freq: None" in str(empty_timestamp_series)
+    assert "Unit: None" in str(empty_timestamp_series)
+    assert "Time zone: None" in str(empty_timestamp_series)
 
 
 def test_map_dimensionless(default_timestamp_series):
     mapped_ts = default_timestamp_series.map(
         lambda x: max(x, 1.)
     )
+    assert mapped_ts.timestamps == default_timestamp_series.timestamps
     assert mapped_ts.values == [1., 1., 2.]
-    assert mapped_ts._series.dtype.units == ureg.Unit('m')
+    assert mapped_ts.unit == default_timestamp_series.unit
+    assert mapped_ts.freq == default_timestamp_series.freq
+    assert mapped_ts.time_zone == default_timestamp_series.time_zone
 
 
 def test_map_with_dimension(default_timestamp_series):
@@ -264,14 +275,17 @@ def test_map_with_dimension(default_timestamp_series):
         lambda x: max(x, 1. * ureg.Unit('m')),
         dimensionless=False,
     )
+    assert mapped_ts.timestamps == default_timestamp_series.timestamps
     assert mapped_ts.values == [1., 1., 2.]
-    assert mapped_ts._series.dtype.units == ureg.Unit('m')
+    assert mapped_ts.unit == default_timestamp_series.unit
+    assert mapped_ts.freq == default_timestamp_series.freq
+    assert mapped_ts.time_zone == default_timestamp_series.time_zone
 
 
 def test_aggregate_without_unit():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
     ]
     values = [1.2, 1.5]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
@@ -288,8 +302,8 @@ def test_aggregate_with_returned_unit(default_timestamp_series):
 
 def test_sum_no_unit():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
     ]
     values = [1.2, 1.5]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
@@ -306,8 +320,8 @@ def test_sum_return_with_unit(default_timestamp_series):
 
 def test_mean_no_unit():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
     ]
     values = [1.2, 1.5]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
@@ -324,8 +338,8 @@ def test_mean_return_with_unit(default_timestamp_series):
 
 def test_round_no_unit():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
     ]
     values = [0.49, -1.51]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
@@ -335,21 +349,31 @@ def test_round_no_unit():
 
 def test_round_with_unit():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
     ]
     values = [0.49, -1.51]
-    ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer',
-                                           unit='m')
-    ts.round(0)
-    assert ts.values == [0., -2.]
-    assert ts._series.dtype == ureg.Unit('m')
+    ts = TimestampSeries.create_from_lists(timestamps, values, unit='m')
+    rounded = ts.round(0)
+    assert rounded.values == [0., -2.]
+    assert rounded.timestamps == timestamps
+    assert rounded.unit == ureg.Unit('m')
+    assert rounded.time_zone is None
+    assert rounded.freq == pd.offsets.Day()
 
 
 def test_timestamp_series_append_default(default_timestamp_series):
-    assert default_timestamp_series.append(3.).last == (
-        pd.Timestamp('2020-01-04T00:00:00').tz_localize('CET').to_pydatetime(), 3.
-    )
+    result = default_timestamp_series.append(3.)
+    assert result.timestamps == [
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 2, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 4, 0, 0, 0)),
+    ]
+    assert result.values == [0., 1., 2., 3.]
+    assert result.unit == default_timestamp_series.unit
+    assert result.time_zone == default_timestamp_series.time_zone
+    assert result.freq == default_timestamp_series.freq
 
 
 def test_timestamp_series_append_empty():
@@ -365,9 +389,17 @@ def test_timestamp_series_append_no_freq():
 
 
 def test_timestamp_series_prepend_default(default_timestamp_series):
-    assert default_timestamp_series.prepend(-1.).first == (
-        pd.Timestamp('2019-12-31T00:00:00').tz_localize('CET').to_pydatetime(), -1.
-    )
+    result = default_timestamp_series.prepend(-1.)
+    assert result.timestamps == [
+        pytz.timezone('CET').localize(dt.datetime(2019, 12, 31, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 2, 0, 0, 0)),
+        pytz.timezone('CET').localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
+    ]
+    assert result.values == [-1., 0., 1., 2.]
+    assert result.unit == default_timestamp_series.unit
+    assert result.time_zone == default_timestamp_series.time_zone
+    assert result.freq == default_timestamp_series.freq
 
 
 def test_timestamp_series_prepend_empty(empty_timestamp_series):
@@ -377,19 +409,18 @@ def test_timestamp_series_prepend_empty(empty_timestamp_series):
 
 def test_create_timestamp_series_inferred_time_zone_none():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
     ]
     values = [0., 1.]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
     assert ts.time_zone is None
-    assert ts._series.index.tzinfo is None
 
 
 def test_create_timestamp_series_inferred_time_zone_valid_fixed_offset():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00+01:00'),
-        pd.Timestamp('2020-01-03T00:00:00+01:00'),
+        pd.Timestamp('2020-01-01T00:00:00+01:00').to_pydatetime(),
+        pd.Timestamp('2020-01-03T00:00:00+01:00').to_pydatetime(),
     ]
     values = [0., 1.]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
@@ -398,8 +429,8 @@ def test_create_timestamp_series_inferred_time_zone_valid_fixed_offset():
 
 def test_create_timestamp_series_inferred_time_zone_inconsistent():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize('Europe/London'),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize('Europe/Stockholm'),
+        pytz.timezone('Europe/London').localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone('Europe/Stockholm').localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
     ]
     values = [0., 1.]
     with pytest.raises(ValueError):
@@ -409,31 +440,29 @@ def test_create_timestamp_series_inferred_time_zone_inconsistent():
 def test_create_timestamp_series_inferred_time_zone_valid():
     tz_name = 'EST'
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(tz_name),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize(tz_name),
+        pytz.timezone(tz_name).localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone(tz_name).localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
     ]
     values = [0., 1.]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone='infer')
     assert ts.time_zone is pytz.timezone(tz_name)
-    assert ts._series.index.tzinfo is pytz.timezone(tz_name)
 
 
 def test_create_timestamp_series_inferred_freq_by_pandas():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 3, 0, 0, 0),
     ]
     values = [0., 1.]
     ts = TimestampSeries.create_from_lists(timestamps, values, freq='infer')
     assert ts.freq == pd.offsets.Day(2)
-    assert ts._series.index.freq == pd.offsets.Day(2)
 
 
 def test_create_timestamp_series_inferred_freq_invalid():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-02T22:00:00').tz_localize(None),
-        pd.Timestamp('2020-01-03T13:30:00').tz_localize(None),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 22, 0, 0),
+        dt.datetime(2020, 1, 3, 13, 30, 0),
     ]
     values = [0., 1., 2.]
     with pytest.raises(ValueError):
@@ -442,42 +471,44 @@ def test_create_timestamp_series_inferred_freq_invalid():
 
 def test_create_timestamp_series_inferred_freq_valid():
     ts = TimestampSeries(series=pd.Series([0., 1., 2.], index=[
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None).to_pydatetime(),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None).to_pydatetime(),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize(None).to_pydatetime(),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
+        dt.datetime(2020, 1, 3, 0, 0, 0),
     ]), freq='infer')
     assert ts.freq == pd.offsets.Day()
-    assert ts._series.index.freq == pd.offsets.Day()
 
 
 def test_create_timestamp_series_mismatching_time_zone_1():
     ts = TimestampSeries(series=pd.Series([0., 1., 2.], index=[
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize(None).to_pydatetime(),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize(None).to_pydatetime(),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize(None).to_pydatetime(),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 2, 0, 0, 0),
+        dt.datetime(2020, 1, 3, 0, 0, 0),
     ]), time_zone='UTC')
     assert ts.time_zone == pytz.UTC
-    assert ts.start == pd.Timestamp('2020-01-01T00:00:00')\
-                       .tz_localize('UTC')\
-                       .to_pydatetime()
+    assert ts.timestamps == [
+        pytz.UTC.localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.UTC.localize(dt.datetime(2020, 1, 2, 0, 0, 0)),
+        pytz.UTC.localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
+    ]
 
 
 def test_create_timestamp_series_mismatching_time_zone_2():
-    ts = TimestampSeries(series=pd.Series([0., 1., 2.], index=[
-        pd.Timestamp('2020-01-01T00:00:00').tz_localize('Europe/Berlin').to_pydatetime(),
-        pd.Timestamp('2020-01-02T00:00:00').tz_localize('Europe/Berlin').to_pydatetime(),
-        pd.Timestamp('2020-01-03T00:00:00').tz_localize('Europe/Berlin').to_pydatetime(),
-    ]), time_zone='UTC')
+    tz_name = 'Europe/Berlin'
+    timestamps = [
+        pytz.timezone(tz_name).localize(dt.datetime(2020, 1, 1, 0, 0, 0)),
+        pytz.timezone(tz_name).localize(dt.datetime(2020, 1, 2, 0, 0, 0)),
+        pytz.timezone(tz_name).localize(dt.datetime(2020, 1, 3, 0, 0, 0)),
+    ]
+    ts = TimestampSeries(series=pd.Series([0., 1., 2.], index=timestamps),
+                         time_zone='UTC')
     assert ts.time_zone == pytz.timezone('UTC')
-    assert ts.start == pd.Timestamp('2020-01-01T00:00:00')\
-                       .tz_localize('Europe/Berlin').tz_convert('UTC')\
-                       .to_pydatetime()
+    assert ts.timestamps == list(map(lambda x: x.astimezone(pytz.UTC), timestamps))
 
 
 def test_create_timestamp_series_mismatching_freq():
     timestamps = [
-        pd.Timestamp('2020-01-01T00:00:00'),
-        pd.Timestamp('2020-01-03T00:00:00'),
+        dt.datetime(2020, 1, 1, 0, 0, 0),
+        dt.datetime(2020, 1, 3, 0, 0, 0),
     ]
     values = [0., 1.]
     with pytest.raises(ValueError):
@@ -487,9 +518,9 @@ def test_create_timestamp_series_mismatching_freq():
 def test_create_timestamp_series_mismatching_compatible_unit():
     ts = (
         TimestampSeries(series=pd.Series(PintArray([0., 1., 2.], dtype='km'), index=[
-            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
+            dt.datetime(2020, 1, 1, 0, 0, 0),
+            dt.datetime(2020, 1, 2, 0, 0, 0),
+            dt.datetime(2020, 1, 3, 0, 0, 0),
         ]), unit='m')
     )
     assert ts.unit == ureg.Unit('m')
@@ -499,9 +530,9 @@ def test_create_timestamp_series_mismatching_compatible_unit():
 def test_create_timestamp_series_mismatching_incompatible_unit():
     with pytest.raises(ValueError):
         TimestampSeries(series=pd.Series(PintArray([0., 1., 2.], dtype='m'), index=[
-            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
+            dt.datetime(2020, 1, 1, 0, 0, 0),
+            dt.datetime(2020, 1, 2, 0, 0, 0),
+            dt.datetime(2020, 1, 3, 0, 0, 0),
         ]), unit='km/h')
 
 
@@ -509,17 +540,17 @@ def test_create_timestamp_series_invalid_time_zone():
     illegal_tz = 'Europe/Nantes'
     with pytest.raises(UnknownTimeZoneError):
         TimestampSeries(series=pd.Series([0., 1., 2.], index=[
-            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
+            dt.datetime(2020, 1, 1, 0, 0, 0),
+            dt.datetime(2020, 1, 2, 0, 0, 0),
+            dt.datetime(2020, 1, 3, 0, 0, 0),
         ]), time_zone=illegal_tz)
 
 
 def test_create_timestamp_series_invalid_freq():
     illegal_freq = 'ABC'
     with pytest.raises(ValueError):
-         TimestampSeries(series=pd.Series([], dtype=float, index=pd.DatetimeIndex([])),
-                         freq=illegal_freq)
+        TimestampSeries(series=pd.Series([], dtype=float, index=pd.DatetimeIndex([])),
+                        freq=illegal_freq)
 
 
 def test_create_timestamp_series_invalid_unit():
@@ -532,9 +563,9 @@ def test_create_timestamp_series_invalid_unit():
 def test_create_timestamp_series_invalid_index():
     with pytest.raises(ValueError):
         TimestampSeries(series=pd.Series([0., 1., 2.], index=[
-            pd.Timestamp('2020-01-03T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-02T00:00:00').to_pydatetime(),
-            pd.Timestamp('2020-01-01T00:00:00').to_pydatetime(),
+            dt.datetime(2020, 1, 3, 0, 0, 0),
+            dt.datetime(2020, 1, 2, 0, 0, 0),
+            dt.datetime(2020, 1, 1, 0, 0, 0),
         ]))
 
 
@@ -897,6 +928,17 @@ def test_neq_4(default_timestamp_series):
     assert ts1 != ts2
 
 
+def test_timestamp_series_convert_time_zone():
+    ts = TimestampSeries(
+        pd.Series(np.arange(3, dtype=float),
+                  index=pd.date_range('2020-01-01', freq='D', periods=3)
+                  ),
+        time_zone=None, freq='D'
+    )
+    result_ts = ts.convert_time_zone('Europe/Stockholm')
+
+
+
 def test_timestamp_series_convert_unit_from_none():
     ts = TimestampSeries(
         pd.Series(np.arange(3, dtype=float),
@@ -906,7 +948,6 @@ def test_timestamp_series_convert_unit_from_none():
     )
     ts = ts.convert_unit('meter')
     assert ts.unit == ureg.parse_units('meter')
-    assert ts._series.dtype.units == ts.unit
 
 
 def test_timestamp_series_convert_unit_to_none(default_timestamp_series):
