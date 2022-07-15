@@ -795,6 +795,18 @@ def test_get_item_positional_index(default_timestamp_series):
     assert default_timestamp_series[0] == 0 * ureg.Unit('m')
 
 
+def test_get_item_positional_slice_index(default_timestamp_series):
+    result_ts = default_timestamp_series[:2]
+    assert result_ts.timestamps == default_timestamp_series.timestamps[:2]
+    assert result_ts.values == default_timestamp_series.values[:2]
+
+
+def test_get_item_positional_list_index(default_timestamp_series):
+    result_ts = default_timestamp_series[[0, 1]]
+    assert result_ts.timestamps == default_timestamp_series.timestamps[:2]
+    assert result_ts.values == default_timestamp_series.values[:2]
+
+
 def test_get_item_datetime_index(default_timestamp_series):
     assert default_timestamp_series[default_timestamp_series.start] == 0 * ureg.Unit('m')
 
@@ -802,6 +814,12 @@ def test_get_item_datetime_index(default_timestamp_series):
 def test_get_item_naive_datetime_index(default_timestamp_series):
     assert default_timestamp_series[
                default_timestamp_series.start.replace(tzinfo=None)] == 0 * ureg.Unit('m')
+
+
+def test_get_item_datetime_list_index(default_timestamp_series):
+    result_ts = default_timestamp_series[default_timestamp_series.timestamps[:2]]
+    assert result_ts.timestamps == default_timestamp_series.timestamps[:2]
+    assert result_ts.values == default_timestamp_series.values[:2]
 
 
 def test_loop(default_timestamp_series):

@@ -1,21 +1,23 @@
 import collections
 import copy
+import datetime as dt
 import numbers
 import warnings
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
 from pint import Quantity
 from pint_pandas import PintArray, PintType
 
-from timeseriesx.validation.timestamp_index import (
-    index_is_datetime,
-    index_is_sorted,
-)
 from timeseriesx.base.base_time_series import BaseTimeSeries
 from timeseriesx.mixins.frequency import FrequencyMixin
 from timeseriesx.mixins.time_zone import TimeZoneMixin
 from timeseriesx.mixins.unit import UnitMixin
+from timeseriesx.validation.timestamp_index import (
+    index_is_datetime,
+    index_is_sorted,
+)
 
 
 class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
@@ -387,6 +389,16 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             other_timestamps = tmp_other.timestamps
 
         return self_timestamps == other_timestamps and self_values == other_values
+
+    def __getitem__(self, item):
+        if isinstance(item, (slice, Iterable)):
+            new_ts = copy.deepcopy(self)
+            new_ts._series = new_ts._series[item]
+            return new_ts
+        else:
+            if isinstance(item, dt.datetime) and item.tzinfo is None and self.time_zone is not None:
+                item = self.time_zone.localize(item)
+            return self._series[item]
 
     def __setitem__(self, key, value):
         raise NotImplementedError()
