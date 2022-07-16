@@ -25,15 +25,19 @@ class UnitMixin(BaseMixin):
     @property
     def unit(self):
         if isinstance(self._series.dtype, PintType):
-            return self._series.pint.u
+            unit = self._series.pint.u
+            if unit.dimensionless:
+                return None
+            else:
+                return unit
         else:
             return None
 
     def _get_magnitude_series(self):
-        if self.unit is None:
-            return self._series
-        else:
+        if isinstance(self._series.dtype, PintType):
             return self._series.pint.magnitude
+        else:
+            return self._series
 
     def aggregate(self, func, with_unit=False):
         """
@@ -45,7 +49,7 @@ class UnitMixin(BaseMixin):
         :return: the aggregated value
         :rtype: numpy.float/numpy.int/pint.Quantity
         """
-        if self.unit is None or with_unit:
+        if not isinstance(self._series.dtype, PintType) or with_unit:
             return self._series.agg(func)
         else:
             return self._get_magnitude_series().agg(func)

@@ -303,12 +303,13 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
             raise ValueError('cannot append to empty series, '
                              'use __setitem__: ts[timestamp] = value instead')
         values = [value]
-        if self.unit:
+        if isinstance(self._series.dtype, PintType):
             values = PintArray(values, dtype=self.unit)
-        self._series = self._series.append(
+        self._series = pd.concat([
+            self._series,
             pd.Series(values,
                       index=[self._series.index.shift(periods=1, freq=self.freq)[-1]])
-        )
+        ])
         return self
 
     def prepend(self, value):
@@ -325,7 +326,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
             raise ValueError('cannot prepend to empty series, '
                              'use __setitem__: ts[timestamp] = value instead')
         values = [value]
-        if self.unit:
+        if isinstance(self._series.dtype, PintType):
             values = PintArray(values, dtype=self.unit)
         self._series = (
             pd.Series(values,
@@ -375,9 +376,9 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
         other_values = other.values
         self_timestamps = self.timestamps
         other_timestamps = other.timestamps
-        if self.unit:
+        if isinstance(self._series.dtype, PintType):
             self_values = list(self._series.pint.to_base_units().values)
-        if other.unit:
+        if isinstance(other._series.dtype, PintType):
             other_values = list(other._series.pint.to_base_units().values)
         if self.time_zone:
             tmp_self = copy.deepcopy(self)
@@ -392,8 +393,12 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
 
     def __getitem__(self, item):
         if isinstance(item, (slice, Iterable)):
-            new_ts = copy.deepcopy(self)
-            new_ts._series = new_ts._series[item]
+            new_ts = TimestampSeries(
+                series=self._series[item].copy(),
+                unit=self.unit,
+                freq=self.freq,
+                time_zone=self.time_zone,
+            )
             return new_ts
         else:
             if isinstance(item, dt.datetime) and item.tzinfo is None and self.time_zone is not None:
