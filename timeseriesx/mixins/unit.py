@@ -67,13 +67,6 @@ class UnitMixin(BaseMixin):
         """
         return self.aggregate(np.mean, with_unit)
 
-    def as_pd_series(self, include_nan=True):
-        tmp_series = self._get_magnitude_series()
-        if include_nan:
-            return tmp_series
-        else:
-            return tmp_series[tmp_series.notnull()]
-
     def convert_unit(self, unit):
         """
         convert the unit of the series

@@ -36,7 +36,7 @@ def test_timestamp_series_create_null_timeseries():
     start = pd.Timestamp(2020, 3, 1, 15, 0, 0).tz_localize('UTC').to_pydatetime()
     end = pd.Timestamp(2020, 3, 1, 17, 0, 0).tz_localize('UTC').to_pydatetime()
     freq = '1H'
-    ts = TimestampSeries.create_null_timeseries(start, end, freq)
+    ts = TimestampSeries.create_null_series(start, end, freq)
     assert ts.freq == pd.offsets.Hour()
     assert ts.time_zone is pytz.UTC
     assert ts.unit is None
@@ -67,8 +67,8 @@ def test_timestamp_series_create_from_lists_mismatching_length():
 
 def test_timestamp_series_properties_time_range_default(default_timestamp_series):
     assert default_timestamp_series.time_range == (
-           pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(),
-           pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime()
+       pd.Timestamp('2020-01-01T00:00:00').tz_localize('CET').to_pydatetime(),
+       pd.Timestamp('2020-01-03T00:00:00').tz_localize('CET').to_pydatetime()
     )
 
 
@@ -353,13 +353,18 @@ def test_timestamp_series_append_default(default_timestamp_series):
 
 
 def test_timestamp_series_append_empty():
-    ts = TimestampSeries(pd.Series([], dtype=float, index=pd.DatetimeIndex([])), freq='10s')
+    ts = TimestampSeries(
+        pd.Series([], dtype=float, index=pd.DatetimeIndex([])),
+        freq='10s'
+    )
     with pytest.raises(ValueError):
         ts.append(1.)
 
 
 def test_timestamp_series_append_no_freq():
-    ts = TimestampSeries(pd.Series([1.], dtype=float, index=pd.DatetimeIndex(['2020-01-01'])))
+    ts = TimestampSeries(
+        pd.Series([1.], dtype=float, index=pd.DatetimeIndex(['2020-01-01']))
+    )
     with pytest.raises(ValueError):
         ts.append(1.)
 
@@ -518,8 +523,8 @@ def test_create_timestamp_series_invalid_time_zone():
 def test_create_timestamp_series_invalid_freq():
     illegal_freq = 'ABC'
     with pytest.raises(ValueError):
-         TimestampSeries(series=pd.Series([], dtype=float, index=pd.DatetimeIndex([])),
-                         freq=illegal_freq)
+        TimestampSeries(series=pd.Series([], dtype=float, index=pd.DatetimeIndex([])),
+                        freq=illegal_freq)
 
 
 def test_create_timestamp_series_invalid_unit():
@@ -539,50 +544,66 @@ def test_create_timestamp_series_invalid_index():
 
 
 def test_create_timestamp_series_valid_unit_str():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         unit='second')
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        unit='second'
+    )
     assert ts.unit == ureg.second
 
 
 def test_create_timestamp_series_valid_unit_obj():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         unit=ureg.second)
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        unit=ureg.second
+    )
     assert ts.unit == ureg.second
 
 
 def test_create_timestamp_series_valid_freq_str():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         freq='30Min')
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        freq='30Min'
+    )
     assert ts.freq == pd.offsets.Minute(30)
 
 
 def test_create_timestamp_series_valid_freq_timedelta():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         freq=pd.Timedelta(minutes=30))
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        freq=pd.Timedelta(minutes=30)
+    )
     assert ts.freq == pd.offsets.Minute(30)
 
 
 def test_create_timestamp_series_valid_freq_offset():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         freq=pd.offsets.Minute(30))
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        freq=pd.offsets.Minute(30)
+    )
     assert ts.freq == pd.offsets.Minute(30)
 
 
 def test_create_timestamp_series_valid_timezone_str():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         time_zone='utc')
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        time_zone='utc'
+    )
     assert ts.time_zone == pytz.UTC
 
 
 def test_create_timestamp_series_valid_timezone_obj_pytz():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         time_zone=pytz.UTC)
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        time_zone=pytz.UTC
+    )
     assert ts.time_zone == pytz.UTC
 
 
 def test_create_timestamp_series_valid_timezone_obj_dateutil():
-    ts = TimestampSeries(series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
-                         time_zone=dateutil.tz.tzutc())
+    ts = TimestampSeries(
+        series=pd.Series([], index=pd.DatetimeIndex([]), dtype=np.float64),
+        time_zone=dateutil.tz.tzutc()
+    )
     assert isinstance(ts.time_zone, tzutc)
 
 
@@ -680,9 +701,11 @@ def test_timestamp_series_add_pandas_series_different_time_zones():
     )
     pd.testing.assert_series_equal(
         result_ts._series,
-        pd.Series([0., 2., 4.],
-                  index=pd.date_range('2020-01-01', freq='D', periods=3, tz='UTC')
-                        .tz_convert('Europe/Stockholm'))
+        pd.Series(
+            [0., 2., 4.],
+            index=pd.date_range('2020-01-01', freq='D', periods=3, tz='UTC')
+                  .tz_convert('Europe/Stockholm')
+        )
     )
     assert result_ts.time_zone == pytz.timezone('Europe/Stockholm')
 
@@ -1118,7 +1141,7 @@ def test_timestamp_series_resample_without_unit():
     ts = ts.resample('D', 'sum')
     assert ts.freq == pd.offsets.Day()
     assert ts.values == [24., 24.]
-    assert ts.unit == None
+    assert ts.unit is None
 
 
 def test_timestamp_series_resample_str_method():

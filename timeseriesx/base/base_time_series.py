@@ -68,18 +68,12 @@ class BaseTimeSeries(metaclass=ABCMeta):
     # --------------------------------- cast --------------------------------- #
 
     @abstractmethod
-    def as_tuples(self):
+    def as_tuples(self, *args, **kwargs):
         raise NotImplementedError()
 
     @abstractmethod
-    def as_dict(self, ordered=False):
+    def as_dict(self, *args, **kwargs):
         raise NotImplementedError()
-
-    def as_pd_series(self, include_nan=True):
-        if include_nan:
-            return self._series
-        else:
-            return self._series[self._series.notnull()]
 
     # ---------------------------- magic methods ----------------------------- #
 

@@ -7,7 +7,7 @@ Welcome to TimeSeriesX's documentation!
 
    readme
    installation
-   usage
+   quickstart
    modules
    contributing
    authors
