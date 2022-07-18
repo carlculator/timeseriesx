@@ -18,6 +18,13 @@ from timeseriesx.mixins.time_zone import TimeZoneMixin
 from timeseriesx.mixins.unit import UnitMixin
 
 
+class TimestampMismatchWarning(RuntimeWarning):
+    """
+    warning about implicit handling of mismatching timestamps
+    """
+    pass
+
+
 class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     @staticmethod
@@ -411,7 +418,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             raise ValueError("The time series have different units")
         if not self._series.index.equals(other._series.index):
             warnings.warn("timestamps do not match, values are auto-filled",
-                          category=RuntimeWarning)
+                          category=TimestampMismatchWarning)
         tmp_series._series = getattr(tmp_series._series, operation)(
             other._series, **kwargs)
         tmp_series.convert_time_zone(self.time_zone)
