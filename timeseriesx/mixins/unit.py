@@ -111,8 +111,8 @@ class UnitMixin(BaseMixin):
                     raise ValueError(f'{unit} unit is not compatible with {self.unit}')
         return self
 
-    def _validate_unit(self, unit):
-        coerce_unit(unit)
+    def _validate_unit(self):
+        unit = coerce_unit(self._unit)
         if isinstance(self._series.dtype, PintType):
             if self.unit != unit:
                 warnings.warn('passed unit and unit of series do not conform, '
