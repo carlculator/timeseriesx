@@ -1,12 +1,17 @@
 import warnings
+from typing import Union, Callable
 
 import numpy as np
 import pandas as pd
+import pint
 from pint import DimensionalityError
 from pint_pandas import (
     PintArray,
     PintType,
 )
+
+from timeseriesx.base.base_time_series import BaseTimeSeries
+from timeseriesx.base.types import UnitType
 from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.unit import coerce_unit
 
@@ -35,7 +40,11 @@ class UnitMixin(BaseMixin):
         else:
             return self._series.pint.magnitude
 
-    def aggregate(self, func, with_unit=False):
+    def aggregate(
+        self,
+        func: Callable,
+        with_unit: bool = False
+    ) -> Union[np.float, pint.Quantity]:
         """
         aggregate all values of the series with a custom aggregation function
 
@@ -43,40 +52,40 @@ class UnitMixin(BaseMixin):
         :param boolean with_unit: flag whether to return the result as a pint
             object, defaults to False
         :return: the aggregated value
-        :rtype: numpy.float/numpy.int/pint.Quantity
+        :rtype: numpy.float/pint.Quantity
         """
         if self._unit is None or with_unit:
             return self._series.agg(func)
         else:
             return self._get_magnitude_series().agg(func)
 
-    def sum(self, with_unit=False):
+    def sum(self, with_unit=False) -> Union[np.float, pint.Quantity]:
         """
         calculate the sum of all values of the series
 
         :param boolean with_unit: flag whether to return the result as a pint
             object, defaults to False
         :return: the sum of the values
-        :rtype: numpy.float/numpy.int/pint.Quantity
+        :rtype: numpy.float/pint.Quantity
         """
         return self.aggregate(np.sum, with_unit)
 
-    def mean(self, with_unit=False):
+    def mean(self, with_unit=False) -> Union[np.float, pint.Quantity]:
         """
         calculate the mean of all values of the series
 
         :param boolean with_unit: flag whether to return the result as a pint
             object, defaults to False
         :return: the mean of the values
-        :rtype: numpy.float/numpy.int/pint.Quantity
+        :rtype: numpy.float/pint.Quantity
         """
         return self.aggregate(np.mean, with_unit)
 
-    def convert_unit(self, unit):
+    def convert_unit(self, unit: UnitType) -> BaseTimeSeries:
         """
         convert the unit of the series
 
-        :param str/pint.Unit unit:
+        :param str/pint.Unit unit: target unit to convert the series to
         :return: the time series with converted units
         :rtype: BaseTimeSeries
         """
@@ -101,7 +110,7 @@ class UnitMixin(BaseMixin):
         self._unit = unit
         return self
 
-    def _validate_unit(self):
+    def _validate_unit(self) -> None:
         self._unit = coerce_unit(self._unit)
         if isinstance(self._series.dtype, PintType):
             if self._series.pint.u != self._unit:

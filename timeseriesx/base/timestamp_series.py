@@ -5,25 +5,24 @@ import copy
 import datetime as dt
 import numbers
 import warnings
-from typing import List, Tuple, Union, Dict, Callable, TypeVar
 from collections.abc import Iterable
+from typing import List, Tuple, Union, Dict, Callable
 
 import numpy as np
 import pandas as pd
 import pint
-import pint_pandas
 from pint import Quantity
 from pint_pandas import PintArray, PintType
-from typing_extensions import TypeAlias, Literal
 
 from timeseriesx.base.base_time_series import BaseTimeSeries
+from timeseriesx.base.types import TimestampType, FreqType, UnitType, \
+    InferableTimeZoneType, InferableFreqType, TimeZoneType, BasicCalcOperationType, \
+    BasicCalcOperandType
 from timeseriesx.mixins.frequency import FrequencyMixin
 from timeseriesx.mixins.time_zone import TimeZoneMixin
 from timeseriesx.mixins.unit import UnitMixin
-from timeseriesx.validation.timestamp_index import (
-    index_is_datetime,
-    index_is_sorted,
-)
+from timeseriesx.validation.timestamp_index import (index_is_datetime,
+                                                    index_is_sorted, )
 
 
 class TimestampMismatchWarning(RuntimeWarning):
@@ -31,22 +30,6 @@ class TimestampMismatchWarning(RuntimeWarning):
     warning about implicit handling of mismatching timestamps
     """
     pass
-
-
-TimestampType: TypeAlias = Union[dt.datetime, pd.Timestamp]
-TimestampSeriesType = TypeVar("TimestampSeriesType", bound="TimestampSeries")
-FreqType: TypeAlias = Union[str, dt.timedelta, pd.offsets.BaseOffset, pd.Timedelta]
-UnitType: TypeAlias = Union[str, pint.Unit]
-TimeZoneType: TypeAlias = Union[str, dt.tzinfo]
-InferableTimeZoneType: TypeAlias = Union[Literal["infer"], TimeZoneType]
-InferableFreqType: TypeAlias = Union[Literal["infer"], FreqType]
-BasicCalcOperationType: TypeAlias = Literal[
-    "add", "subtract", "__mul__", "__div__", "__floordiv__"
-]
-BasicCalcOperandType: TypeAlias = Union[
-    TimestampSeriesType, pd.Series, collections.Sequence, np.ndarray,
-    pint_pandas.PintArray, numbers.Number
-]
 
 
 class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
