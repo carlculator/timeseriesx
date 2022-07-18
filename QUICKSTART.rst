@@ -253,12 +253,12 @@ Cast Series
 Todo:
 - map
 - aggregate
-append/prepend
-round
-indexing
-calculations
-compare
-loop
-conversion: ts, unit
-resample freq
-get/fill gaps
+- append/prepend
+- round
+- indexing
+- calculations
+- compare
+- loop
+- conversion: tz, unit
+- resample freq
+- get/fill gaps
