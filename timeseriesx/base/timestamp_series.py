@@ -5,7 +5,7 @@ import copy
 import datetime as dt
 import numbers
 import warnings
-from typing import List, Tuple, Union, Dict, Literal, Callable, TypeVar
+from typing import List, Tuple, Union, Dict, Callable, TypeVar
 from collections.abc import Iterable
 
 import numpy as np
@@ -14,7 +14,7 @@ import pint
 import pint_pandas
 from pint import Quantity
 from pint_pandas import PintArray, PintType
-from typing_extensions import TypeAlias
+from typing_extensions import TypeAlias, Literal
 
 from timeseriesx.base.base_time_series import BaseTimeSeries
 from timeseriesx.mixins.frequency import FrequencyMixin
