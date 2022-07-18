@@ -396,7 +396,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             new_ts._series = new_ts._series[item]
             return new_ts
         else:
-            if isinstance(item, dt.datetime) and item.tzinfo is None and self.time_zone is not None:
+            if isinstance(item, dt.datetime) and item.tzinfo is None \
+                    and self.time_zone is not None:
                 item = self.time_zone.localize(item)
             return self._series[item]
 
