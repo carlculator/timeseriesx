@@ -7,7 +7,10 @@ from timeseriesx.validation.time_zone import (
 )
 
 
-class TimeZoneWarning(Warning):
+class TimeZoneWarning(RuntimeWarning):
+    """
+    warning about implicit time zone handling
+    """
     pass
 
 

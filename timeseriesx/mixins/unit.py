@@ -11,7 +11,10 @@ from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.unit import coerce_unit
 
 
-class UnitWarning(Warning):
+class UnitWarning(RuntimeWarning):
+    """
+    warning about implicit unit handling
+    """
     pass
 
 
