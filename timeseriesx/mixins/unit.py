@@ -16,8 +16,6 @@ class UnitMixin(BaseMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._unit = kwargs.get("unit", None)
-        if self._unit:
-            self._unit = coerce_unit(self._unit)
         self._validate_unit()
 
     @property
@@ -104,7 +102,7 @@ class UnitMixin(BaseMixin):
         return self
 
     def _validate_unit(self):
-        coerce_unit(self._unit)
+        self._unit = coerce_unit(self._unit)
         if isinstance(self._series.dtype, PintType):
             if self._series.pint.u != self._unit:
                 try:
