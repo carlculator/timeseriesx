@@ -1,0 +1,5 @@
+[tool.darker]
+isort = true
+
+[tool.isort]
+profile = "black"
