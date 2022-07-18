@@ -20,6 +20,13 @@ from timeseriesx.validation.timestamp_index import (
 )
 
 
+class TimestampMismatchWarning(RuntimeWarning):
+    """
+    warning about implicit handling of mismatching timestamps
+    """
+    pass
+
+
 class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     @staticmethod
@@ -423,7 +430,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not self.unit == other.unit:
             raise ValueError("The time series have different units")
         if not self._series.index.equals(other._series.index):
-            warnings.warn("timestamps do not match, values are auto-filled")
+            warnings.warn("timestamps do not match, values are auto-filled",
+                          category=TimestampMismatchWarning)
         tmp_series._series = getattr(tmp_series._series, operation)(
             other._series, **kwargs)
         tmp_series.convert_time_zone(self.time_zone)
@@ -436,7 +444,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not all(map(lambda x: isinstance(x, numbers.Number), other)):
             raise ValueError("sequence contains non-numeric values")
         if not self._series.index.equals(other.index):
-            warnings.warn("timestamps do not match, values are auto-filled")
+            warnings.warn("timestamps do not match, values are auto-filled",
+                          category=RuntimeWarning)
         tmp_series._series = getattr(tmp_series._series, operation)(other, **kwargs)
         # enforce resulting TimestampSeries' time zone to be equal to initial
         # TimestampSeries (self)
