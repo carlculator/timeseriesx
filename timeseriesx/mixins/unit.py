@@ -3,16 +3,13 @@ import warnings
 import numpy as np
 import pandas as pd
 from pint import DimensionalityError
-from pint_pandas import (
-    PintArray,
-    PintType,
-)
+from pint_pandas import PintArray, PintType
+
 from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.unit import coerce_unit
 
 
 class UnitMixin(BaseMixin):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._unit = kwargs.get("unit", None)
@@ -85,8 +82,7 @@ class UnitMixin(BaseMixin):
         if unit is None:
             if isinstance(self._series.dtype, PintType):
                 self._series = pd.Series(
-                    self._series.pint.magnitude,
-                    index=self._series.index
+                    self._series.pint.magnitude, index=self._series.index
                 )
         else:
             unit = coerce_unit(unit)
@@ -99,7 +95,7 @@ class UnitMixin(BaseMixin):
                 try:
                     self._series = self._series.pint.to(unit)
                 except DimensionalityError:
-                    raise ValueError(f'{unit} unit is not compatible with {self._unit}')
+                    raise ValueError(f"{unit} unit is not compatible with {self._unit}")
         self._unit = unit
         return self
 
@@ -112,7 +108,7 @@ class UnitMixin(BaseMixin):
                 except ValueError:
                     raise ValueError()
                 else:
-                    warnings.warn('passed unit and unit of series do not conform')
+                    warnings.warn("passed unit and unit of series do not conform")
         else:
             self.convert_unit(self._unit)
 

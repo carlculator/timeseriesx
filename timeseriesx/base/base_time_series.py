@@ -113,19 +113,19 @@ class BaseTimeSeries(metaclass=ABCMeta):
             raise StopIteration
 
     def __add__(self, other):
-        return self._basic_calc('add', other, fill_value=0)
+        return self._basic_calc("add", other, fill_value=0)
 
     def __sub__(self, other):
-        return self._basic_calc('subtract', other, fill_value=0)
+        return self._basic_calc("subtract", other, fill_value=0)
 
     def __mul__(self, other):
-        return self._basic_calc('__mul__', other)
+        return self._basic_calc("__mul__", other)
 
     def __truediv__(self, other):
-        return self._basic_calc('__truediv__', other)
+        return self._basic_calc("__truediv__", other)
 
     def __floordiv__(self, other):
-        return self._basic_calc('__floordiv__', other)
+        return self._basic_calc("__floordiv__", other)
 
     def __str__(self):
         raise NotImplementedError()
