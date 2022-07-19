@@ -346,12 +346,38 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     # --------------------------------- cast --------------------------------- #
 
-    def as_tuples(self):
-        return list(zip(self.timestamps, self.values))
+    def as_tuples(self, time_zone=True, unit=False, include_nan=True):
+        if time_zone:
+            timestamps = self.timestamps
+        else:
+            timestamps = self._series.index.tz_localize(None).to_pydatetime().tolist()
+        if unit:
+            values = self._series.values.tolist()
+        else:
+            values = self.values
+        tuples = list(zip(timestamps, values))
+        if not include_nan:
+            tuples = [(t, v) for t, v in tuples if not np.isnan(v)]
+        return tuples
 
-    def as_dict(self, ordered=False):
-        dict_class = dict if not ordered else collections.OrderedDict
-        return self.as_pd_series().to_dict(into=dict_class)
+    def as_dict(self, time_zone=True, unit=False, ordered=False, include_nan=True):
+        if ordered:
+            return collections.OrderedDict(
+                self.as_tuples(time_zone=time_zone, unit=unit, include_nan=include_nan))
+        else:
+            return dict(
+                self.as_tuples(time_zone=time_zone, unit=unit, include_nan=include_nan))
+
+    def as_pd_series(self, time_zone=True, unit=False, include_nan=True):
+        if unit:
+            series = self._series
+        else:
+            series = self._get_magnitude_series()
+        if not time_zone:
+            series = series.tz_localize(None)
+        if not include_nan:
+            series = series[series.notnull()]
+        return series
 
     def as_time_period_series(self, align_left=True):
         raise NotImplementedError()
