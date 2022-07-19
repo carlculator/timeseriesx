@@ -1,15 +1,21 @@
 import warnings
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+from pint import DimensionalityError
 from pint_pandas import (
     PintArray,
     PintType,
 )
-
-from timeseriesx import ureg
 from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.unit import coerce_unit
+
+
+class UnitWarning(RuntimeWarning):
+    """
+    warning about implicit unit handling
+    """
+    pass
 
 
 class UnitMixin(BaseMixin):
@@ -17,8 +23,6 @@ class UnitMixin(BaseMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._unit = kwargs.get("unit", None)
-        if self._unit:
-            self._unit = coerce_unit(self._unit)
         self._validate_unit()
 
     @property
@@ -97,15 +101,15 @@ class UnitMixin(BaseMixin):
                     index=self._series.index,
                 )
             else:
-                if ureg.is_compatible_with(self._unit, unit):
+                try:
                     self._series = self._series.pint.to(unit)
-                else:
+                except DimensionalityError:
                     raise ValueError(f'{unit} unit is not compatible with {self._unit}')
         self._unit = unit
         return self
 
     def _validate_unit(self):
-        coerce_unit(self._unit)
+        self._unit = coerce_unit(self._unit)
         if isinstance(self._series.dtype, PintType):
             if self._series.pint.u != self._unit:
                 try:
@@ -113,7 +117,9 @@ class UnitMixin(BaseMixin):
                 except ValueError:
                     raise ValueError()
                 else:
-                    warnings.warn('passed unit and unit of series do not conform')
+                    warnings.warn('passed unit and unit of series do not conform, '
+                                  'converted unit to the given unit',
+                                  category=UnitWarning)
         else:
             self.convert_unit(self._unit)
 

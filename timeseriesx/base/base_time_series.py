@@ -1,5 +1,6 @@
 import copy
 from abc import ABCMeta, abstractmethod
+from collections.abc import Iterable
 
 import numpy as np
 
@@ -84,12 +85,7 @@ class BaseTimeSeries(metaclass=ABCMeta):
     # ---------------------------- magic methods ----------------------------- #
 
     def __getitem__(self, item):
-        if isinstance(item, slice):
-            new_ts = copy.deepcopy(self)
-            new_ts._series = new_ts._series[item]
-            return new_ts
-        else:
-            return self._series[item]
+        return NotImplemented()
 
     def __setitem__(self, key, value):
         return NotImplemented()

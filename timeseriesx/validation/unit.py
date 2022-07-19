@@ -11,6 +11,8 @@ def coerce_unit(unit):
     :return: the coerced unit
     :rtype: pint.Unit
     """
+    if unit is None:
+        return unit
     if isinstance(unit, str):
         unit = ureg.parse_units(unit)
     if isinstance(unit, Unit):
