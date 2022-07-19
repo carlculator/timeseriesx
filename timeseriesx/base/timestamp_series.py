@@ -50,12 +50,67 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        return TimestampSeries.create_constant_timeseries(
+        warnings.warn("this method was renamed, and will be deprecated in a future "
+                      "version, please use `create_null_series` instead",
+                      category=DeprecationWarning)
+        return TimestampSeries.create_null_series(start, end, freq, unit=unit,
+                                                  time_zone=time_zone)
+
+    @staticmethod
+    def create_null_series(start, end, freq, unit=None, time_zone='infer'):
+        """
+        create a `TimestampSeries`-object from `start` to `end` with NaN-values
+
+        :param str/datetime.datetime/pandas.Timestamp start: the start timestamp of the
+            series (included)
+        :param str/datetime.datetime/pandas.Timestamp end: the end timestamp of the
+            series (included)
+        :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            supported
+        :param str/pint.Unit unit: the unit of the series's values, many string
+            representations of common units are supported, such as `m`, `s`, `kg`
+            and many more
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
+            or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
+            from `start` and `end`
+        :return: a new TimestampSeries-object
+        :rtype: TimestampSeries
+        """
+        return TimestampSeries.create_constant_series(
             start, end, np.NaN, freq, unit, time_zone=time_zone)
 
     @staticmethod
     def create_constant_timeseries(start, end, value, freq, unit=None,
                                    time_zone='infer'):
+        """
+        create a `TimestampSeries`-object from `start` to `end` with constant value
+
+        :param str/datetime.datetime/pandas.Timestamp start: the start timestamp of the
+            series (included)
+        :param str/datetime.datetime/pandas.Timestamp end: the end timestamp of the
+            series (included)
+        :param int/float value: the constant value for each element
+        :param str/datetime.timedelta/pandas.Offset/pandas.Timedelta freq:
+            the frequency of the timestamp series, `pandas offset aliases <https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases>`_
+            supported
+        :param str/pint.Unit unit: the unit of the series's values, many string
+            representations of common units are supported, such as `m`, `s`, `kg`
+            and many more
+        :param str/tzinfo time_zone: the name of the time zone, (see `IANA <https://www.iana.org/time-zones>`_)
+            or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
+            from `start` and `end`
+        :return: a new TimestampSeries-object
+        :rtype: TimestampSeries
+        """
+        warnings.warn("this method was renamed, and will be deprecated in a future "
+                      "version, please use `create_constant_series` instead",
+                      category=DeprecationWarning)
+        return TimestampSeries.create_constant_series(start, end, value, freq,
+                                                      unit=unit, time_zone=time_zone)
+
+    @staticmethod
+    def create_constant_series(start, end, value, freq, unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from `start` to `end` with constant value
 
