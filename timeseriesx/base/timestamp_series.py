@@ -400,7 +400,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
 
     def __getitem__(self, item):
         if isinstance(item, (slice, Iterable)):
-            new_ts = TimestampSeries(
+            new_ts = self.__class__(
                 series=self._series[item].copy(),
                 unit=self.unit,
                 freq=self.freq,
