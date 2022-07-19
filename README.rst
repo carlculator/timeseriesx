@@ -52,7 +52,6 @@ Features
 * convert time zone or unit
 * resample data to new frequency
 * fill and get gaps
-* join time series
 * perform calculations on time series with python standard operators
 
 
