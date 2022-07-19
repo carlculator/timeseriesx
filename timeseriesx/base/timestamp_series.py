@@ -262,7 +262,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
         if self.empty:
             return self
 
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             if dimensionless:
                 mapped_values = self._get_magnitude_series().apply(func).values
                 self._series = pd.Series(PintArray(mapped_values, dtype=self.unit),
@@ -288,7 +288,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
         :rtype: TimestampSeries
         """
         # ToDo: feature request at pint-pandas
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             rounded_values = self._get_magnitude_series().values.round(decimals)
             self._series = pd.Series(PintArray(rounded_values, dtype=self.unit),
                                      index=self._series.index)
@@ -310,7 +310,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
             raise ValueError('cannot append to empty series, '
                              'use __setitem__: ts[timestamp] = value instead')
         values = [value]
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             values = PintArray(values, dtype=self.unit)
         self._series = pd.concat([
             self._series,
@@ -333,7 +333,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
             raise ValueError('cannot prepend to empty series, '
                              'use __setitem__: ts[timestamp] = value instead')
         values = [value]
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             values = PintArray(values, dtype=self.unit)
         self._series = (
             pd.Series(values,
@@ -383,7 +383,7 @@ class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
         other_values = other.values
         self_timestamps = self.timestamps
         other_timestamps = other.timestamps
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             self_values = list(self._series.pint.to_base_units().values)
         if isinstance(other._series.dtype, PintType):
             other_values = list(other._series.pint.to_base_units().values)
