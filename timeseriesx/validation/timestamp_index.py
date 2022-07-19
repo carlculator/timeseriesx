@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def index_is_datetime(series, exception=True):
+def index_is_datetime(series: pd.Series, exception: bool = True) -> bool:
     """
     check if the index of a pandas.Series is a valid DatetimeIndex
 
@@ -18,7 +18,11 @@ def index_is_datetime(series, exception=True):
     return True
 
 
-def index_is_sorted(series, ascending=True, exception=True):
+def index_is_sorted(
+    series: pd.Series,
+    ascending: bool = True,
+    exception: bool = True,
+) -> bool:
     """
     check if the (datetime-) index of a pandas.Series is sorted
 
