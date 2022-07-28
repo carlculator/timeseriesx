@@ -1,13 +1,13 @@
 import copy
+import datetime as dt
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
 
+from timeseriesx.base.base_time_series import BaseTimeSeries
 from timeseriesx.mixins import BaseMixin
-from timeseriesx.validation.frequency import (
-    coerce_freq,
-    infer_freq,
-)
+from timeseriesx.validation.frequency import (coerce_freq, infer_freq, )
 
 
 class FrequencyMixin(BaseMixin):
@@ -20,10 +20,15 @@ class FrequencyMixin(BaseMixin):
         self._validate_freq()
 
     @property
-    def freq(self):
+    def freq(self) -> Optional[pd.offsets.BaseOffset]:
         return self._freq
 
-    def fill_gaps(self, start=None, end=None, value=np.NaN):
+    def fill_gaps(
+        self,
+        start: dt.datetime = None,
+        end: dt.datetime = None,
+        value: Union[float, np.float] = np.NaN,
+    ) -> BaseTimeSeries:
         """
         fill all gaps between `start` and `end` in a series with a frequency with a
         constant value
@@ -34,7 +39,7 @@ class FrequencyMixin(BaseMixin):
         :param datetime.datetime end: the end timestamps of the period that will be
             investigated (included). If None, then the last timestamp in the
             time series is considered as end. Defaults to None
-        :param float/int/np.float value: the constant fill value
+        :param float/np.float value: the constant fill value
         :return: return the series with filled gaps
         :rtype: BaseTimeSeries
         """
@@ -58,7 +63,11 @@ class FrequencyMixin(BaseMixin):
         self._series.loc[self._series.isnull()] = value
         return self
 
-    def get_gaps(self, start=None, end=None):
+    def get_gaps(
+        self,
+        start: dt.datetime = None,
+        end: dt.datetime = None,
+    ) -> BaseTimeSeries:
         """
         get all timestamps between `start` and `end` from a series with a frequency,
         where the value is missing or NaN
@@ -86,7 +95,7 @@ class FrequencyMixin(BaseMixin):
         gap_series = tmp_series._series[tmp_series._series.isnull()]
         return gap_series.index.to_pydatetime().tolist()
 
-    def resample(self, freq, method):
+    def resample(self, freq, method) -> BaseTimeSeries:
         """
         resample the series to a smaller frequency, aggregate the values
 
@@ -117,7 +126,7 @@ class FrequencyMixin(BaseMixin):
         self._freq = freq
         return self
 
-    def _validate_freq(self):
+    def _validate_freq(self) -> None:
         self._freq = coerce_freq(self._freq)
         try:
             self._series.index.freq = self._freq
@@ -128,7 +137,7 @@ class FrequencyMixin(BaseMixin):
         super()._validate_all()
         self._validate_freq()
 
-    def _get_time_zone(self):
+    def _get_time_zone(self) -> Optional[dt.tzinfo]:
         if hasattr(self, 'time_zone'):
             return self.time_zone
         else:

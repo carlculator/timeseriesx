@@ -1,13 +1,17 @@
+from typing import Optional
+
 import pandas as pd
 
+from timeseriesx.base.types import FreqType
 
-def infer_freq(series):
+
+def infer_freq(series: pd.Series) -> Optional[pd.offsets.BaseOffset]:
     """
     infer the frequency from a pandas Series with `DatetimeIndex`
 
     :param pandas.Series series: a pandas Series with `DatetimeIndex`
     :return: the inferred frequency object
-    :rtype: pandas.DateOffset
+    :rtype: pandas.offsets.BaseOffset
     """
     if series.index.freq is not None and hasattr(series.index.freq, "delta"):
         delta = series.index.freq.delta
@@ -22,14 +26,14 @@ def infer_freq(series):
     return coerce_freq(delta)
 
 
-def coerce_freq(freq):
+def coerce_freq(freq: FreqType) -> Optional[pd.offsets.BaseOffset]:
     """
     return a convenient representation of a frequency as a pandas.DateOffset object
 
     :param str/datetime.timedelta/pandas.Timedelta/pandas.DateOffset freq:
         a frequency string or frequency object to coerce
     :return: coerced frequency object
-    :rtype: pandas.DateOffset
+    :rtype: pandas.offsets.BaseOffset
     """
     if freq is None:
         return freq

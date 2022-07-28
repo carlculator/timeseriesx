@@ -1,10 +1,11 @@
+import datetime as dt
 import warnings
+from typing import Optional
 
+from timeseriesx.base.base_time_series import BaseTimeSeries
+from timeseriesx.base.types import TimeZoneType
 from timeseriesx.mixins import BaseMixin
-from timeseriesx.validation.time_zone import (
-    coerce_time_zone,
-    infer_tz_from_series,
-)
+from timeseriesx.validation.time_zone import (coerce_time_zone, infer_tz_from_series, )
 
 
 class TimeZoneWarning(RuntimeWarning):
@@ -24,10 +25,10 @@ class TimeZoneMixin(BaseMixin):
         self._validate_time_zone()
 
     @property
-    def time_zone(self):
+    def time_zone(self) -> Optional[dt.tzinfo]:
         return self._time_zone
 
-    def convert_time_zone(self, tz):
+    def convert_time_zone(self, tz: TimeZoneType) -> BaseTimeSeries:
         """
         convert time series index to another time zone, or make an time zone naive
         index time zone aware (or the other way round)
@@ -45,7 +46,7 @@ class TimeZoneMixin(BaseMixin):
         self._time_zone = tz
         return self
 
-    def _validate_time_zone(self):
+    def _validate_time_zone(self) -> None:
         inferred_tz = infer_tz_from_series(self._series)
         self.convert_time_zone(self._time_zone)
         if inferred_tz != self._time_zone:

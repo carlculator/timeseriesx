@@ -1,9 +1,13 @@
+from typing import Optional
+
+import pint
 from pint import Unit
 
 from timeseriesx import ureg
+from timeseriesx.base.types import UnitType
 
 
-def coerce_unit(unit):
+def coerce_unit(unit: UnitType) -> Optional[pint.Unit]:
     """
     returns the convenient representation of a unit as a `pint.Unit`-object
 
