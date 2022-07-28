@@ -370,9 +370,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     def as_pd_series(self, time_zone=True, unit=False, include_nan=True):
         if unit:
-            series = self._series
+            series = self._series.copy()
         else:
-            series = self._get_magnitude_series()
+            series = self._get_magnitude_series().copy()
         if not time_zone:
             series = series.tz_localize(None)
         if not include_nan:
