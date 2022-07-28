@@ -360,7 +360,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             tuples = [(t, v) for t, v in tuples if not np.isnan(v)]
         return tuples
 
-    def as_dict(self, time_zone=True, unit=False, ordered=False, include_nan=True):
+    def as_dict(self, ordered=False, *, time_zone=True, unit=False, include_nan=True):
         if ordered:
             return collections.OrderedDict(
                 self.as_tuples(time_zone=time_zone, unit=unit, include_nan=include_nan))
@@ -368,7 +368,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             return dict(
                 self.as_tuples(time_zone=time_zone, unit=unit, include_nan=include_nan))
 
-    def as_pd_series(self, time_zone=True, unit=False, include_nan=True):
+    def as_pd_series(self, include_nan=True, *, time_zone=True, unit=False):
         if unit:
             series = self._series.copy()
         else:
