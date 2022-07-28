@@ -50,7 +50,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        warnings.warn("this method was renamed, and will be deprecated in a future "
+        warnings.warn("this method was renamed, and will be removed in a future "
                       "version, please use `create_null_series` instead",
                       category=DeprecationWarning)
         return TimestampSeries.create_null_series(start, end, freq, unit=unit,
@@ -103,7 +103,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        warnings.warn("this method was renamed, and will be deprecated in a future "
+        warnings.warn("this method was renamed, and will be removed in a future "
                       "version, please use `create_constant_series` instead",
                       category=DeprecationWarning)
         return TimestampSeries.create_constant_series(start, end, value, freq,
