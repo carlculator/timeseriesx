@@ -29,8 +29,8 @@ class TimestampMismatchWarning(RuntimeWarning):
 
 class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
-    @staticmethod
-    def create_null_timeseries(start, end, freq, unit=None, time_zone='infer'):
+    @classmethod
+    def create_null_timeseries(cls, start, end, freq, unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from `start` to `end` with NaN-values
 
@@ -56,8 +56,8 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         return TimestampSeries.create_null_series(start, end, freq, unit=unit,
                                                   time_zone=time_zone)
 
-    @staticmethod
-    def create_null_series(start, end, freq, unit=None, time_zone='infer'):
+    @classmethod
+    def create_null_series(cls, start, end, freq, unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from `start` to `end` with NaN-values
 
@@ -77,11 +77,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        return TimestampSeries.create_constant_series(
-            start, end, np.NaN, freq, unit, time_zone=time_zone)
+        return cls.create_constant_series(start, end, np.NaN, freq, unit=unit,
+                                          time_zone=time_zone)
 
-    @staticmethod
-    def create_constant_timeseries(start, end, value, freq, unit=None,
+    @classmethod
+    def create_constant_timeseries(cls, start, end, value, freq, unit=None,
                                    time_zone='infer'):
         """
         create a `TimestampSeries`-object from `start` to `end` with constant value
@@ -106,11 +106,12 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         warnings.warn("this method was renamed, and will be removed in a future "
                       "version, please use `create_constant_series` instead",
                       category=DeprecationWarning)
-        return TimestampSeries.create_constant_series(start, end, value, freq,
-                                                      unit=unit, time_zone=time_zone)
+        return cls.create_constant_series(start, end, value, freq,
+                                          unit=unit, time_zone=time_zone)
 
-    @staticmethod
-    def create_constant_series(start, end, value, freq, unit=None, time_zone='infer'):
+    @classmethod
+    def create_constant_series(cls, start, end, value, freq, unit=None,
+                               time_zone='infer'):
         """
         create a `TimestampSeries`-object from `start` to `end` with constant value
 
@@ -133,11 +134,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         """
         index = pd.date_range(start, end, freq=freq)
         series = pd.Series([value] * len(index), index=index)
-        return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
-                                                     time_zone=time_zone)
+        return cls.create_from_pd_series(series, freq=freq, unit=unit,
+                                         time_zone=time_zone)
 
-    @staticmethod
-    def create_from_lists(timestamps, values, freq='infer', unit=None,
+    @classmethod
+    def create_from_lists(cls, timestamps, values, freq='infer', unit=None,
                           time_zone='infer'):
         """
         create a `TimestampSeries`-object from a list of timestamps and values matched
@@ -161,11 +162,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not len(timestamps) == len(values):
             raise ValueError('lengths of timestamps and values do not not match')
         tuples = list(zip(timestamps, values))
-        return TimestampSeries.create_from_tuples(tuples, freq=freq, unit=unit,
-                                                  time_zone=time_zone)
+        return cls.create_from_tuples(tuples, freq=freq, unit=unit,
+                                      time_zone=time_zone)
 
-    @staticmethod
-    def create_from_tuples(tuples, freq='infer', unit=None, time_zone='infer'):
+    @classmethod
+    def create_from_tuples(cls, tuples, freq='infer', unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from a list of tuples of timestamps and values
 
@@ -184,11 +185,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :rtype: TimestampSeries
         """
         dictionary = {k: v for k, v in tuples}
-        return TimestampSeries.create_from_dict(dictionary, freq=freq, unit=unit,
-                                                time_zone=time_zone)
+        return cls.create_from_dict(dictionary, freq=freq, unit=unit,
+                                    time_zone=time_zone)
 
-    @staticmethod
-    def create_from_dict(dictionary, freq='infer', unit=None, time_zone='infer'):
+    @classmethod
+    def create_from_dict(cls, dictionary, freq='infer', unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from a dict timestamps as keys and values as
         values
@@ -209,11 +210,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :rtype: TimestampSeries
         """
         series = pd.Series(dictionary)
-        return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
-                                                     time_zone=time_zone)
+        return cls.create_from_pd_series(series, freq=freq, unit=unit,
+                                         time_zone=time_zone)
 
-    @staticmethod
-    def create_from_pd_series(series, freq='infer', unit=None, time_zone='infer'):
+    @classmethod
+    def create_from_pd_series(cls, series, freq='infer', unit=None, time_zone='infer'):
         """
         create a `TimestampSeries`-object from a pandas `Series` with `DatetimeIndex`
 
@@ -231,7 +232,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
         """
-        return TimestampSeries(series, freq=freq, unit=unit, time_zone=time_zone)
+        return cls(series, freq=freq, unit=unit, time_zone=time_zone)
 
     # ------------------------------ constructor ----------------------------- #
 
