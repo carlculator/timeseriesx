@@ -69,11 +69,11 @@ class BaseTimeSeries(metaclass=ABCMeta):
     # --------------------------------- cast --------------------------------- #
 
     @abstractmethod
-    def as_tuples(self, *args, **kwargs):
+    def as_tuples(self):
         raise NotImplementedError()
 
     @abstractmethod
-    def as_dict(self, *args, **kwargs):
+    def as_dict(self):
         raise NotImplementedError()
 
     # ---------------------------- magic methods ----------------------------- #
