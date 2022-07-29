@@ -11,7 +11,7 @@ TimeSeriesX
         :target: https://pypi.python.org/pypi/timeseriesx
         :alt: Downloads per month
 
-.. image:: https://img.shields.io/pypi/pyversions/timeseriesx.svg?style=flat-square&label=Python%20Versions
+.. image:: https://img.shields.io/pypi/pyversions/timeseriesx.svg?label=Python%20Versions
         :target: https://pypi.python.org/pypi/timeseriesx
         :alt: Supported python versions
 
@@ -19,8 +19,9 @@ TimeSeriesX
         :target: https://app.travis-ci.com/github/carlculator/timeseriesx
         :alt: build status
 
-.. image:: https://img.shields.io/coveralls/carlculator/timeseriesx/master.svg?style=flat-square&label=Coverage
+.. image:: https://coveralls.io/repos/github/carlculator/timeseriesx/badge.svg?branch=develop
         :target: https://coveralls.io/github/carlculator/timeseriesx
+        :alt: test coverage
 
 .. image:: https://readthedocs.org/projects/timeseriesx/badge/?version=latest
         :target: https://timeseriesx.readthedocs.io/en/latest/?badge=latest
