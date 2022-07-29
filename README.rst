@@ -5,9 +5,22 @@ TimeSeriesX
 
 .. image:: https://img.shields.io/pypi/v/timeseriesx.svg
         :target: https://pypi.python.org/pypi/timeseriesx
+        :alt: Current pypi release
+
+.. image:: https://img.shields.io/pypi/dm/timeseriesx.svg
+        :target: https://pypi.python.org/pypi/timeseriesx
+        :alt: Downloads per month
+
+.. image:: https://img.shields.io/pypi/pyversions/timeseriesx.svg?style=flat-square&label=Python%20Versions
+        :target: https://pypi.python.org/pypi/timeseriesx
+        :alt: Supported python versions
 
 .. image:: https://travis-ci.com/carlculator/timeseriesx.svg?branch=develop
         :target: https://app.travis-ci.com/github/carlculator/timeseriesx
+        :alt: build status
+
+.. image:: https://img.shields.io/coveralls/carlculator/timeseriesx/master.svg?style=flat-square&label=Coverage
+        :target: https://coveralls.io/github/carlculator/timeseriesx
 
 .. image:: https://readthedocs.org/projects/timeseriesx/badge/?version=latest
         :target: https://timeseriesx.readthedocs.io/en/latest/?badge=latest

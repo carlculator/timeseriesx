@@ -14,3 +14,4 @@ pint==0.18.0
 pint-pandas==0.2
 pytz==2022.1
 python-dateutil==2.8.2
+coveralls==3.3.1
