@@ -5,5 +5,5 @@ class BaseMixin(object):
     def __init__(self, *args, **kwargs):
         super().__init__()
 
-    def _validate_all(self):
+    def as_pd_series(self):
         pass

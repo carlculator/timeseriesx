@@ -27,7 +27,7 @@ class TimestampMismatchWarning(RuntimeWarning):
     pass
 
 
-class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
+class TimestampSeries(FrequencyMixin, UnitMixin, TimeZoneMixin, BaseTimeSeries):
 
     @staticmethod
     def create_null_timeseries(start, end, freq, unit=None, time_zone='infer'):
@@ -262,7 +262,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if self.empty:
             return self
 
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             if dimensionless:
                 mapped_values = self._get_magnitude_series().apply(func).values
                 self._series = pd.Series(PintArray(mapped_values, dtype=self.unit),
@@ -288,7 +288,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :rtype: TimestampSeries
         """
         # ToDo: feature request at pint-pandas
-        if isinstance(self._series.dtype, PintType):
+        if self._is_pint_series():
             rounded_values = self._get_magnitude_series().values.round(decimals)
             self._series = pd.Series(PintArray(rounded_values, dtype=self.unit),
                                      index=self._series.index)
@@ -310,12 +310,13 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             raise ValueError('cannot append to empty series, '
                              'use __setitem__: ts[timestamp] = value instead')
         values = [value]
-        if self.unit:
+        if self._is_pint_series():
             values = PintArray(values, dtype=self.unit)
-        self._series = self._series.append(
+        self._series = pd.concat([
+            self._series,
             pd.Series(values,
                       index=[self._series.index.shift(periods=1, freq=self.freq)[-1]])
-        )
+        ])
         return self
 
     def prepend(self, value):
@@ -332,7 +333,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             raise ValueError('cannot prepend to empty series, '
                              'use __setitem__: ts[timestamp] = value instead')
         values = [value]
-        if self.unit:
+        if self._is_pint_series():
             values = PintArray(values, dtype=self.unit)
         self._series = (
             pd.Series(values,
@@ -359,9 +360,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     # ---------------------------- magic methods  ---------------------------- #
 
     def __str__(self):
-        return f"Time zone: {str(self._time_zone)}, " \
-               f"Freq: {getattr(self._freq, 'freqstr', '')}, " \
-               f"Unit: {str(self._unit or None)}\n" \
+        return f"Time zone: {str(self.time_zone)}, " \
+               f"Freq: {getattr(self.freq, 'freqstr', None)}, " \
+               f"Unit: {str(self.unit or None)}\n" \
                f"{str(self._series)}"
 
     def __repr__(self):
@@ -382,9 +383,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         other_values = other.values
         self_timestamps = self.timestamps
         other_timestamps = other.timestamps
-        if self.unit:
+        if self._is_pint_series():
             self_values = list(self._series.pint.to_base_units().values)
-        if other.unit:
+        if isinstance(other._series.dtype, PintType):
             other_values = list(other._series.pint.to_base_units().values)
         if self.time_zone:
             tmp_self = copy.deepcopy(self)
@@ -399,8 +400,12 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     def __getitem__(self, item):
         if isinstance(item, (slice, Iterable)):
-            new_ts = copy.deepcopy(self)
-            new_ts._series = new_ts._series[item]
+            new_ts = self.__class__(
+                series=self._series[item].copy(),
+                unit=self.unit,
+                freq=self.freq,
+                time_zone=self.time_zone,
+            )
             return new_ts
         else:
             if isinstance(item, dt.datetime) and item.tzinfo is None \
@@ -428,6 +433,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if self.freq != other.freq:
             raise ValueError("The time series have different frequencies")
         if not self.unit == other.unit:
+            # ToDo: raise error only for add/sub, not for mul/div
             raise ValueError("The time series have different units")
         if not self._series.index.equals(other._series.index):
             warnings.warn("timestamps do not match, values are auto-filled",
@@ -450,8 +456,6 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         # enforce resulting TimestampSeries' time zone to be equal to initial
         # TimestampSeries (self)
         tmp_series.convert_time_zone(self.time_zone)
-        if isinstance(tmp_series._series.dtype, PintType):
-            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     def _basic_calc_collection(self, operation, other):
@@ -461,8 +465,6 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not all(map(lambda x: isinstance(x, (numbers.Number, Quantity)), other)):
             raise ValueError("sequence contains non-numeric values")
         tmp_series._series = getattr(tmp_series._series, operation)(other)
-        if isinstance(tmp_series._series.dtype, PintType):
-            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     def _basic_calc_scalar(self, operation, other):
@@ -470,15 +472,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not isinstance(other, (numbers.Number, Quantity)):
             raise ValueError('value is not numeric')
         tmp_series._series = getattr(tmp_series._series, operation)(other)
-        if isinstance(other, Quantity):
-            tmp_series._unit = tmp_series._series.pint.u
         return tmp_series
 
     # ---------------------------- validation ------------------------------- #
-
-    def validate_all(self):
-        self._validate()
-        super()._validate_all()
 
     def _validate(self):
         index_is_datetime(self._series)
