@@ -4,6 +4,14 @@ from timeseriesx.mixins import BaseMixin
 from timeseriesx.validation.time_zone import coerce_time_zone, infer_tz_from_series
 
 
+class TimeZoneWarning(RuntimeWarning):
+    """
+    warning about implicit time zone handling
+    """
+
+    pass
+
+
 class TimeZoneMixin(BaseMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,7 +48,8 @@ class TimeZoneMixin(BaseMixin):
         if inferred_tz != self._time_zone:
             warnings.warn(
                 "time zone and given timestamps do not conform, "
-                "converted timestamps to given time zone"
+                "converted timestamps to given time zone",
+                category=TimeZoneWarning,
             )
 
     def _validate_all(self):

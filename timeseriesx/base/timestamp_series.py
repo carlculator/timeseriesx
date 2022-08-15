@@ -1,7 +1,9 @@
 import collections
 import copy
+import datetime as dt
 import numbers
 import warnings
+from collections.abc import Iterable
 
 import numpy as np
 import pandas as pd
@@ -13,6 +15,14 @@ from timeseriesx.mixins.frequency import FrequencyMixin
 from timeseriesx.mixins.time_zone import TimeZoneMixin
 from timeseriesx.mixins.unit import UnitMixin
 from timeseriesx.validation.timestamp_index import index_is_datetime, index_is_sorted
+
+
+class TimestampMismatchWarning(RuntimeWarning):
+    """
+    warning about implicit handling of mismatching timestamps
+    """
+
+    pass
 
 
 class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
@@ -403,6 +413,20 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
         return self_timestamps == other_timestamps and self_values == other_values
 
+    def __getitem__(self, item):
+        if isinstance(item, (slice, Iterable)):
+            new_ts = copy.deepcopy(self)
+            new_ts._series = new_ts._series[item]
+            return new_ts
+        else:
+            if (
+                isinstance(item, dt.datetime)
+                and item.tzinfo is None
+                and self.time_zone is not None
+            ):
+                item = self.time_zone.localize(item)
+            return self._series[item]
+
     def __setitem__(self, key, value):
         raise NotImplementedError()
 
@@ -425,7 +449,10 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not self.unit == other.unit:
             raise ValueError("The time series have different units")
         if not self._series.index.equals(other._series.index):
-            warnings.warn("timestamps do not match, values are auto-filled")
+            warnings.warn(
+                "timestamps do not match, values are auto-filled",
+                category=TimestampMismatchWarning,
+            )
         tmp_series._series = getattr(tmp_series._series, operation)(
             other._series, **kwargs
         )
@@ -439,7 +466,10 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         if not all(map(lambda x: isinstance(x, numbers.Number), other)):
             raise ValueError("sequence contains non-numeric values")
         if not self._series.index.equals(other.index):
-            warnings.warn("timestamps do not match, values are auto-filled")
+            warnings.warn(
+                "timestamps do not match, values are auto-filled",
+                category=RuntimeWarning,
+            )
         tmp_series._series = getattr(tmp_series._series, operation)(other, **kwargs)
         # enforce resulting TimestampSeries' time zone to be equal to initial
         # TimestampSeries (self)
