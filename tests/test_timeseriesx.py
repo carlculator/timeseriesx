@@ -32,11 +32,11 @@ def default_timestamp_series(n=3):
     )
 
 
-def test_timestamp_series_create_null_timeseries():
+def test_timestamp_series_create_null_series():
     start = pd.Timestamp(2020, 3, 1, 15, 0, 0).tz_localize('UTC').to_pydatetime()
     end = pd.Timestamp(2020, 3, 1, 17, 0, 0).tz_localize('UTC').to_pydatetime()
     freq = '1H'
-    ts = TimestampSeries.create_null_timeseries(start, end, freq)
+    ts = TimestampSeries.create_null_series(start, end, freq)
     assert ts.freq == pd.offsets.Hour()
     assert ts.time_zone is pytz.UTC
     assert ts.unit is None
