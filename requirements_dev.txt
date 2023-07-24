@@ -5,7 +5,7 @@ watchdog==2.1.9
 flake8==4.0.1
 tox==3.25.1
 coverage==6.4.2
-Sphinx==5.0.2
+Sphinx==4.3.2
 sphinx-rtd-theme==1.0.0
 twine==4.0.1
 pytest==7.1.2

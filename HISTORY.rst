@@ -3,6 +3,18 @@ History
 =======
 
 
+0.1.13 (2022-07-19)
+-------------------
+
+* fix a few bugs by avoiding `is_compatible_with` in `convert_unit`
+* raise only `ValueError` instead of `DimensionalityError` on unit dimensionality mismatch
+* remove `pandas` installation dependency because of transitive dependency via `pint-pandas`
+* loosen requirements for `pytz` and `dateutil`, no special version requirements known
+* extend `__getitem__` functionality by supporting iterables of timestamps or positional indices
+* explicitly support indexing by time zone naive timestamps, which is deprecated by `pandas`
+* make `coerce_unit` behave like `coerce_freq` and `coerce_time_zone` by passing through `None`
+
+
 0.1.12 (2022-03-16)
 -------------------
 
