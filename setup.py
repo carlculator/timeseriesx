@@ -15,7 +15,8 @@ setup_requirements = []
 test_requirements = ['pytest>=3', ]
 
 requirements = [
-    'pint-pandas>=0.2',
+    'pint-pandas>=0.2,<0.4',
+    'pint>=0.17,<0.21',
     'pytz',
     'python-dateutil',
 ]

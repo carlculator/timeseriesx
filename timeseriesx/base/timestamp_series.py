@@ -49,7 +49,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             from `start` and `end`
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
-        """
+        """  # noqa: E501
         return TimestampSeries.create_constant_timeseries(
             start, end, np.NaN, freq, unit, time_zone=time_zone)
 
@@ -75,7 +75,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             from `start` and `end`
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
-        """
+        """  # noqa: E501
         index = pd.date_range(start, end, freq=freq)
         series = pd.Series([value] * len(index), index=index)
         return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
@@ -102,7 +102,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
-        """
+        """  # noqa: E501
         if not len(timestamps) == len(values):
             raise ValueError('lengths of timestamps and values do not not match')
         tuples = list(zip(timestamps, values))
@@ -127,7 +127,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
-        """
+        """  # noqa: E501
         dictionary = {k: v for k, v in tuples}
         return TimestampSeries.create_from_dict(dictionary, freq=freq, unit=unit,
                                                 time_zone=time_zone)
@@ -152,7 +152,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             by the timestamps
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
-        """
+        """  # noqa: E501
         series = pd.Series(dictionary)
         return TimestampSeries.create_from_pd_series(series, freq=freq, unit=unit,
                                                      time_zone=time_zone)
@@ -175,7 +175,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
             from `start` and `end`
         :return: a new TimestampSeries-object
         :rtype: TimestampSeries
-        """
+        """  # noqa: E501
         return TimestampSeries(series, freq=freq, unit=unit, time_zone=time_zone)
 
     # ------------------------------ constructor ----------------------------- #
@@ -193,7 +193,7 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         :param str/tzinfo time_zone: the name of the time zone or None (see `IANA <https://www.iana.org/time-zones>`_)
             or a tzinfo-object, pass `'infer'` if you want the time zone to be derived
             from `start` and `end`
-        """
+        """  # noqa: E501
         self._series = series
         self._validate()
         super().__init__(freq=freq, unit=unit, time_zone=time_zone)
@@ -312,10 +312,11 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         values = [value]
         if self.unit:
             values = PintArray(values, dtype=self.unit)
-        self._series = self._series.append(
+        self._series = pd.concat([
+            self._series,
             pd.Series(values,
                       index=[self._series.index.shift(periods=1, freq=self.freq)[-1]])
-        )
+        ])
         return self
 
     def prepend(self, value):
@@ -334,11 +335,12 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
         values = [value]
         if self.unit:
             values = PintArray(values, dtype=self.unit)
-        self._series = (
+        self._series = pd.concat([
             pd.Series(values,
-                      index=[self._series.index.shift(periods=1, freq=-self.freq)[0]])
-            .append(self._series)
-        )
+                      index=[self._series.index.shift(periods=1, freq=-self.freq)[0]]),
+
+            self._series,
+        ])
         return self
 
     def join(self, other_ts, fit=True):
@@ -377,6 +379,9 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
 
     def __eq__(self, other):
         if not isinstance(other, TimestampSeries):
+            return False
+        if (self.unit is None) != (other.unit is None):
+            # extra case for comparison of dimensionless values and values with units
             return False
         self_values = self.values
         other_values = other.values
