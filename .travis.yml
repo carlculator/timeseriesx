@@ -1,11 +1,12 @@
 os: linux
+dist: focal
 arch:
   - arm64
 language: python
 python:
-- 3.9
-- 3.8
-- 3.7
+- "3.10"
+- "3.9"
+- "3.8"
 install: pip install -U tox-travis coverage coveralls
 script: tox
 after_success:
@@ -22,4 +23,4 @@ deploy:
     tags: true
     branch: master
     repo: carlculator/timeseriesx
-    python: 3.9
+    python: 3.10
