@@ -8,4 +8,4 @@ import pint
 
 ureg = pint.get_application_registry()
 
-from timeseriesx.base.timestamp_series import TimestampSeries
+from timeseriesx.base.timestamp_series import TimestampSeries  # noqa: F401,E402
