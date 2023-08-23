@@ -71,14 +71,8 @@ class BaseTimeSeries(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def as_dict(self, ordered=False):
+    def as_dict(self):
         raise NotImplementedError()
-
-    def as_pd_series(self, include_nan=True):
-        if include_nan:
-            return self._series
-        else:
-            return self._series[self._series.notnull()]
 
     # ---------------------------- magic methods ----------------------------- #
 
