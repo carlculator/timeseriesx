@@ -75,6 +75,14 @@ Features
 * perform calculations on time series with python standard operators
 
 
+Installation
+------------
+
+.. code-block:: sh
+
+    pip install timeseriesx
+
+
 Credits
 -------
 
