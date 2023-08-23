@@ -240,15 +240,15 @@ def test_timestamp_series_repr_empty(empty_timestamp_series):
 
 
 def test_timestamp_series_str_default(default_timestamp_series):
-    assert "Freq: D" in str(default_timestamp_series)
-    assert "Unit: meter" in str(default_timestamp_series)
-    assert "Time zone: CET" in str(default_timestamp_series)
+    assert "FREQ: D" in str(default_timestamp_series)
+    assert "UNIT: meter" in str(default_timestamp_series)
+    assert "TIME ZONE: CET" in str(default_timestamp_series)
 
 
 def test_timestamp_series_str_empty(empty_timestamp_series):
-    assert "Freq: " in str(empty_timestamp_series)
-    assert "Unit: " in str(empty_timestamp_series)
-    assert "Time zone: " in str(empty_timestamp_series)
+    assert "FREQ: " in str(empty_timestamp_series)
+    assert "UNIT: " in str(empty_timestamp_series)
+    assert "TIME ZONE: " in str(empty_timestamp_series)
 
 
 def test_map_dimensionless(default_timestamp_series):

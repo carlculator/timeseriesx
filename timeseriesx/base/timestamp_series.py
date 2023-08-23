@@ -369,15 +369,19 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     # ---------------------------- magic methods  ---------------------------- #
 
     def __str__(self):
-        return f"Time zone: {str(self._time_zone)}, " \
-               f"Freq: {getattr(self._freq, 'freqstr', '')}, " \
-               f"Unit: {str(self._unit or None)}\n" \
+        return f"TIME ZONE: {str(self._time_zone)} *** " \
+               f"FREQ: {getattr(self._freq, 'freqstr', '')} *** " \
+               f"UNIT: {str(self._unit or None)}\n" \
                f"{str(self._series)}"
 
     def __repr__(self):
-        return "{klass}(series=Series(PintArray({values}, dtype={unit}), " \
-               "index={index}), " \
-               "freq={freq}, unit={unit}, time_zone={tz})".format(
+        return "{klass}(\n" \
+               "\tseries=Series(PintArray({values}, dtype={unit}),\n" \
+               "\tindex={index}),\n" \
+               "\tfreq={freq},\n" \
+               "\tunit={unit},\n" \
+               "\ttime_zone={tz}\n" \
+               ")".format(
             klass=self.__class__.__name__,
             values=self.values,
             index=repr(self._series.index),
