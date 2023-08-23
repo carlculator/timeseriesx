@@ -358,6 +358,14 @@ class TimestampSeries(UnitMixin, TimeZoneMixin, FrequencyMixin, BaseTimeSeries):
     def as_time_period_series(self, align_left=True):
         raise NotImplementedError()
 
+    def as_darts(self, name="value"):
+        from darts import TimeSeries
+        return TimeSeries.from_times_and_values(
+            times=self._series.tz_convert(None).index,
+            values=np.array(self.values)[:, None],
+            columns=[name],
+        )
+
     # ---------------------------- magic methods  ---------------------------- #
 
     def __str__(self):
