@@ -1,3 +1,4 @@
+import numbers
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -120,6 +121,14 @@ class BaseTimeSeries(metaclass=ABCMeta):
 
     def __floordiv__(self, other):
         return self._basic_calc('__floordiv__', other)
+
+    def __mod__(self, other):
+        return self._basic_calc('__mod__', other)
+
+    def __pow__(self, other):
+        if not isinstance(other, (numbers.Number)):
+            raise TypeError("pow operation on TimesSeries is only allowed for scalars")
+        return self._basic_calc('__pow__', other)
 
     def __str__(self):
         raise NotImplementedError()

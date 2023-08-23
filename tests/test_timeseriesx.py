@@ -759,6 +759,11 @@ def test_timestamp_series_floordiv_pint_scalar(default_timestamp_series):
     assert result_ts.values == [0, 0, 1]
 
 
+def test_timestamp_series_mod_pint_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series % (2 * ureg.Unit('m'))
+    assert result_ts.values == [0, 1, 0]
+
+
 def test_timestamp_series_div_pint_scalar():
     ts = TimestampSeries(
         pd.Series(np.arange(3, dtype=float),
@@ -769,6 +774,21 @@ def test_timestamp_series_div_pint_scalar():
     result_ts = ts / (2 * ureg.Unit('m'))
     assert result_ts.values == [0., .5, 1.]
     assert result_ts.unit == ureg.Unit('m')
+
+
+def test_timestamp_series_pow_scalar(default_timestamp_series):
+    result_ts = default_timestamp_series ** 2
+    assert result_ts.values == [0, 1, 4]
+
+
+def test_timestamp_series_pow_pint_scalar(default_timestamp_series):
+    with pytest.raises(TypeError):
+        default_timestamp_series ** default_timestamp_series ** 2
+
+
+def test_timestamp_series_pow_timestamp_series(default_timestamp_series):
+    with pytest.raises(TypeError):
+        default_timestamp_series ** (2 * ureg.Unit('m'))
 
 
 def test_timestamp_series_subtract_list():
