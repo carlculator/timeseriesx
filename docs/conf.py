@@ -53,7 +53,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'TimeSeriesX'
-copyright = "2021, Alexander Schulz"
+copyright = "2023, Alexander Schulz"
 author = "Alexander Schulz"
 
 # The version info for the project you're documenting, acts as replacement
