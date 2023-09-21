@@ -38,7 +38,7 @@ def test_timestamp_series_create_null_timeseries():
     freq = "1H"
     ts = TimestampSeries.create_null_timeseries(start, end, freq)
     assert ts.freq == pd.offsets.Hour()
-    assert ts.time_zone is pytz.UTC
+    assert ts.time_zone is dt.timezone.utc
     assert ts.unit is None
 
 
@@ -243,16 +243,16 @@ def test_timestamp_series_as_pd_series_exclude_nan():
 
 
 def test_timestamp_series_repr_default(default_timestamp_series):
-    from numpy import array
-    from pandas import DatetimeIndex, Series
+    from numpy import array  # noqa: F401
+    from pandas import DatetimeIndex, Series  # noqa: F401
 
     ts = eval(repr(default_timestamp_series))
     pd.testing.assert_series_equal(ts._series, default_timestamp_series._series)
 
 
 def test_timestamp_series_repr_empty(empty_timestamp_series):
-    from numpy import array
-    from pandas import DatetimeIndex, Series
+    from numpy import array  # noqa: F401
+    from pandas import DatetimeIndex, Series  # noqa: F401
 
     ts = eval(repr(empty_timestamp_series))
     assert ts.empty
@@ -419,7 +419,7 @@ def test_create_timestamp_series_inferred_time_zone_valid_fixed_offset():
     ]
     values = [0.0, 1.0]
     ts = TimestampSeries.create_from_lists(timestamps, values, time_zone="infer")
-    assert ts.time_zone == pytz.FixedOffset(60)
+    assert ts.time_zone == dt.timezone(dt.timedelta(hours=1))
 
 
 def test_create_timestamp_series_inferred_time_zone_inconsistent():
@@ -1287,7 +1287,7 @@ def test_timestamp_series_resample_without_unit():
     ts = ts.resample("D", "sum")
     assert ts.freq == pd.offsets.Day()
     assert ts.values == [24.0, 24.0]
-    assert ts.unit == None
+    assert ts.unit is None
 
 
 def test_timestamp_series_resample_str_method():
