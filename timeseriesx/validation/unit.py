@@ -18,4 +18,4 @@ def coerce_unit(unit):
     if isinstance(unit, Unit):
         return unit
     else:
-        return ValueError(f'{unit} is no valid unit')
+        return ValueError(f"{unit} is no valid unit")

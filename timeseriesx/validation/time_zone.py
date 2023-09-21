@@ -18,7 +18,7 @@ def coerce_time_zone(tz):
     elif isinstance(tz, tzinfo):
         return tz
     else:
-        raise ValueError(f'{tz} is not a valid timezone')
+        raise ValueError(f"{tz} is not a valid timezone")
 
 
 def infer_tz_from_timestamp(timestamp):
@@ -40,4 +40,4 @@ def infer_tz_from_series(series):
     :return: the inferred time zone
     :rtype: datetime.tzinfo
     """
-    return getattr(series.index, 'tzinfo', None)
+    return getattr(series.index, "tzinfo", None)

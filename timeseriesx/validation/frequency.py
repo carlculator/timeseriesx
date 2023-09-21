@@ -37,4 +37,4 @@ def coerce_freq(freq):
         try:
             return pd.tseries.frequencies.to_offset(freq)
         except ValueError:
-            raise ValueError('invalid frequency')
+            raise ValueError("invalid frequency")

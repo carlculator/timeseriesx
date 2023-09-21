@@ -1,8 +1,8 @@
 """Top-level package for TimeSeriesX."""
 
 __author__ = """Alexander Schulz"""
-__email__ = 'info@alexander-schulz.eu'
-__version__ = '0.1.13'
+__email__ = "info@alexander-schulz.eu"
+__version__ = "0.1.13"
 
 import pint
 

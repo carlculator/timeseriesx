@@ -1,4 +1,3 @@
-
 class BaseMixin(object):
     _series = None
 
